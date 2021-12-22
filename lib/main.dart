@@ -1,0 +1,34 @@
+import 'package:conf_moderator/screens/add_hall_screen.dart';
+import 'package:conf_moderator/screens/add_session_screen.dart';
+import 'package:conf_moderator/screens/hall_details_screen.dart';
+import 'package:flutter/material.dart';
+import 'screens/add_speaker_screen.dart';
+import 'screens/conference_screen.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Conference Moderator',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+          primarySwatch: Colors.teal,
+          textTheme: const TextTheme(
+            bodyText2: TextStyle(fontSize: 25),
+            bodyText1: TextStyle(fontSize: 30),
+
+          )),
+      home: ConferenceScreen(),
+      routes: {
+        ConferenceScreen.routeName: (ctx) => ConferenceScreen(),
+        HallDetailsScreen.routeName:(ctx)=> HallDetailsScreen(),
+        AddHallScreen.routeName: (ctx)=> AddHallScreen(),
+        AddSessionScreen.routeName:(ctx)=> AddSessionScreen(),
+        AddSpeakerScreen.routeName:(ctx)=>AddSpeakerScreen(),
+      },
+    );
+  }
+}

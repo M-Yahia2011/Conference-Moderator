@@ -1,0 +1,80 @@
+import 'package:conf_moderator/screens/add_speaker_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
+
+class AddSessionScreen extends StatefulWidget {
+  static const routeName = "/add_session";
+  const AddSessionScreen({Key? key}) : super(key: key);
+
+  @override
+  State<AddSessionScreen> createState() => _AddSessionScreenState();
+}
+
+class _AddSessionScreenState extends State<AddSessionScreen> {
+  DateTime? pickedDate;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Add a session"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(50.0),
+        child: Column(
+          children: [
+            SizedBox(
+              width: 300,
+              height: 60,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final picked = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2050));
+                  setState(() {
+                    pickedDate = picked;
+                  });
+                },
+                child: Text(
+                    pickedDate != null
+                        ? intl.DateFormat.yMMMEd().format(pickedDate!)
+                        : "Pick a Date",
+                    style: const TextStyle(fontSize: 20)),
+              ),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            SizedBox(
+                width: 500,
+                height: 60,
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushNamed(AddSpeakerScreen.routeName);
+                    },
+                    child: const Text("Add a Speaker",
+                        style: const TextStyle(fontSize: 20)))),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: 10,
+                  itemBuilder: (ctx, idx) {
+                    return Container(
+                      height: 200,
+                      width: 200,
+                      child: Card(
+                        child: InkWell(
+                          onTap: () {},
+                          child: Center(child: Text("Speaker $idx")),
+                        ),
+                      ),
+                    );
+                  }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
