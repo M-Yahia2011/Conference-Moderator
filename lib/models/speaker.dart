@@ -1,13 +1,13 @@
 class Speaker {
-  String? speakerID;
-  String? speakerName;
-  String? startTime;
-  String? endTime;
-  String? filePath;
+  String speakerID;
+  String speakerName;
+  String startTime;
+  String endTime;
+  String filePath;
   Speaker(
-      {this.speakerID,
-      this.speakerName,
-      this.startTime,
-      this.endTime,
-      this.filePath});
+      {required this.speakerID,
+      required this.speakerName,
+      required this.startTime,
+      required this.endTime,
+      required this.filePath});
 }

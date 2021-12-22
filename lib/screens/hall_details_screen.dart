@@ -1,4 +1,8 @@
+import 'package:conf_moderator/models/hall.dart';
+import 'package:conf_moderator/providers/conf_provider.dart';
+import 'package:conf_moderator/screens/session_details_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HallDetailsScreen extends StatelessWidget {
   static const routeName = "/hallDetailsScreen";
@@ -8,52 +12,39 @@ class HallDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String hallID = ModalRoute.of(context)!.settings.arguments as String;
+    final Hall hall = Provider.of<ConferenceProvider>(context, listen: false)
+        .getHallbyID(hallID);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Hall $hallID"),
+        title: Text(hall.hallName),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 200, vertical: 10),
-        child: ListView.builder(itemBuilder: (context, idx) {
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  const Text("Dr. Assem"),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("From: 13:00 PM"),
-                      const Text("To: 15:00 PM"),
-                    ],
+        child:
+            Consumer<ConferenceProvider>(builder: (ctx, conferenceProvider, _) {
+          final sessions = conferenceProvider.getSessions(hallID);
+          return ListView.builder(
+              itemCount: sessions.length,
+              itemBuilder: (context, idx) {
+                return Card(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context)
+                          .pushNamed(SessionDetailsScreen.routeName, arguments: sessions[idx]);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text("Session: ${sessions[idx].sessionName}"),
+                          Text("Date: ${sessions[idx].sessionDate}"),
+                         
+                        ],
+                      ),
+                    ),
                   ),
-                  const Text("Open File"),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SizedBox(
-                        width: 200,
-                        height: 40,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: const Text("Upload File"),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 200,
-                        height: 40,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: const Text("Remove File"),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
-          );
+                );
+              });
         }),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:conf_moderator/models/session.dart';
 import 'package:flutter/material.dart';
 
 class SessionDetailsScreen extends StatelessWidget {
@@ -7,38 +8,57 @@ class SessionDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String sessionID =
-        ModalRoute.of(context)!.settings.arguments as String;
+    final Session session =
+        ModalRoute.of(context)!.settings.arguments as Session;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Session ${sessionID.toString()}"),
+        title: Text("Session: ${session.sessionName}"),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 200, vertical: 10),
-        child: ListView.builder(itemBuilder: (context, idx) {
-          return Card(
-            child: Column(
-              children: [
-                const Text("Dr. Assem"),
-                const Text("From: 13:00 PM"),
-                const Text("To: 15:00 PM"),
-                const Text("Open File"),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: const Text("Upload File"),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: const Text("Remove File"),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          );
-        }),
+        child: ListView.builder(
+            itemCount: session.speakers.length,
+            itemBuilder: (context, idx) {
+              final speakers = session.speakers;
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text(speakers[idx].speakerName),
+                      Text("From: ${speakers[idx].startTime}"),
+                      Text("To: ${speakers[idx].endTime}"),
+                      const Text(
+                        "Open File",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.blue),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            width: 200,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: const Text("Upload File"),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 50,
+                            width: 200,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: const Text("Remove File"),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              );
+            }),
       ),
     );
   }

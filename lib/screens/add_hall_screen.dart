@@ -38,19 +38,38 @@ class _AddHallScreenState extends State<AddHallScreen> {
                       border: InputBorder.none),
                 ),
               ),
-              Container(
-                width: double.infinity,
-                height: 60,
-                margin: const EdgeInsets.all(15),
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(AddSessionScreen.routeName);
-                    },
-                    child: const Text(
-                      "Add a Session",
-                      style: TextStyle(fontSize: 25),
-                    )),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    width: 300,
+                    height: 40,
+                    margin: const EdgeInsets.all(15),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pushNamed(AddSessionScreen.routeName);
+                        },
+                        child: const Text(
+                          "Add a Session",
+                          style: TextStyle(fontSize: 25),
+                        )),
+                  ),
+                  Container(
+                    width: 300,
+                    height: 40,
+                    margin: const EdgeInsets.all(15),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          // SAVE EVERYTHING HERE
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          "Done",
+                          style: TextStyle(fontSize: 25),
+                        )),
+                  ),
+                ],
               ),
               Expanded(
                 child: Scrollbar(
@@ -58,7 +77,9 @@ class _AddHallScreenState extends State<AddHallScreen> {
                   child: GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 5, childAspectRatio: 1.5 / 2),
+                        crossAxisCount: 5,
+                        childAspectRatio: 1.5 / 2,
+                      ),
                       itemCount: 10,
                       itemBuilder: (ctx, idx) {
                         return SizedBox(

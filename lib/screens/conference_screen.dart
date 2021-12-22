@@ -1,6 +1,8 @@
+import 'package:conf_moderator/providers/conf_provider.dart';
 import 'package:conf_moderator/screens/add_hall_screen.dart';
 import 'package:conf_moderator/screens/hall_details_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ConferenceScreen extends StatefulWidget {
   static const routeName = "/add_conf";
@@ -84,38 +86,41 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
                 ScrollConfiguration(
                   behavior: ScrollConfiguration.of(context)
                       .copyWith(scrollbars: false),
-                  child: GridView.builder(
-                    controller: _scrollController,
-                    itemCount: 10,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 7,
-                      childAspectRatio: 1.5 / 2,
-                    ),
-                    itemBuilder: (context, idx) {
-                      return Card(
-                        margin: const EdgeInsets.all(15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(20),
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                                HallDetailsScreen.routeName,
-                                arguments: idx.toString());
-                          },
-                          child: Center(
-                            child: Text(
-                              "Hall NO. $idx",
-                              style: const TextStyle(fontSize: 30),
+                  child: Consumer<ConferenceProvider>(
+                    builder: (ctx, conferenceProvider, _) => GridView.builder(
+                      controller: _scrollController,
+                      itemCount: conferenceProvider.halls.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 7,
+                        childAspectRatio: 1.5 / 2,
+                      ),
+                      itemBuilder: (context, idx) {
+                        return Card(
+                          margin: const EdgeInsets.all(15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                  HallDetailsScreen.routeName,
+                                  arguments:
+                                      conferenceProvider.halls[idx].hallID);
+                            },
+                            child: Center(
+                              child: Text(
+                                conferenceProvider.halls[idx].hallName,
+                                style: const TextStyle(fontSize: 30),
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ],

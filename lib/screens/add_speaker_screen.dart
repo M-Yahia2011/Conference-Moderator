@@ -24,8 +24,9 @@ class _AddSpeakerScreenState extends State<AddSpeakerScreen> {
           children: [
             Container(
               height: 60,
+              width: 700,
               padding: const EdgeInsets.all(4),
-              margin: const EdgeInsets.symmetric(vertical: 5),
+              margin: const EdgeInsets.symmetric(vertical: 15),
               decoration: BoxDecoration(
                   color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(15)),
@@ -90,7 +91,7 @@ class _AddSpeakerScreenState extends State<AddSpeakerScreen> {
             ),
             SizedBox(
                 width: 300,
-                height: 60,
+                height: 50,
                 child: ElevatedButton.icon(
                   onPressed: () {},
                   label: const Text("Upload the File"),
