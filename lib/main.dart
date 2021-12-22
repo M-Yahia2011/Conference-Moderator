@@ -1,6 +1,7 @@
 import 'package:conf_moderator/screens/add_hall_screen.dart';
 import 'package:conf_moderator/screens/add_session_screen.dart';
 import 'package:conf_moderator/screens/hall_details_screen.dart';
+import 'package:conf_moderator/screens/session_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/add_speaker_screen.dart';
 import 'screens/conference_screen.dart';
@@ -21,13 +22,14 @@ class MyApp extends StatelessWidget {
             bodyText1: TextStyle(fontSize: 30),
 
           )),
-      home: ConferenceScreen(),
+      home: const ConferenceScreen(),
       routes: {
-        ConferenceScreen.routeName: (ctx) => ConferenceScreen(),
-        HallDetailsScreen.routeName:(ctx)=> HallDetailsScreen(),
-        AddHallScreen.routeName: (ctx)=> AddHallScreen(),
-        AddSessionScreen.routeName:(ctx)=> AddSessionScreen(),
-        AddSpeakerScreen.routeName:(ctx)=>AddSpeakerScreen(),
+        ConferenceScreen.routeName: (ctx) => const ConferenceScreen(),
+        HallDetailsScreen.routeName:(ctx)=> const HallDetailsScreen(),
+        SessionDetailsScreen.routeName:(ctx)=> const SessionDetailsScreen(),
+        AddHallScreen.routeName: (ctx)=> const AddHallScreen(),
+        AddSessionScreen.routeName:(ctx)=> const AddSessionScreen(),
+        AddSpeakerScreen.routeName:(ctx)=>const AddSpeakerScreen(),
       },
     );
   }

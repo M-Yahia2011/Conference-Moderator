@@ -43,7 +43,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
                     style: const TextStyle(fontSize: 20)),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 15,
             ),
             SizedBox(
@@ -55,16 +55,18 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
                           .pushNamed(AddSpeakerScreen.routeName);
                     },
                     child: const Text("Add a Speaker",
-                        style: const TextStyle(fontSize: 20)))),
+                        style:  TextStyle(fontSize: 20)))),
             Expanded(
               child: ListView.builder(
                   itemCount: 10,
                   itemBuilder: (ctx, idx) {
-                    return Container(
+                    return SizedBox(
                       height: 200,
                       width: 200,
                       child: Card(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                         child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
                           onTap: () {},
                           child: Center(child: Text("Speaker $idx")),
                         ),

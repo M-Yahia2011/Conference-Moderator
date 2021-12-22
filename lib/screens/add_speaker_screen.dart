@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 class AddSpeakerScreen extends StatefulWidget {
   static const routeName = "/add_speaker";
 
+  const AddSpeakerScreen({Key? key}) : super(key: key);
+
   @override
   State<AddSpeakerScreen> createState() => _AddSpeakerScreenState();
 }
@@ -14,7 +16,7 @@ class _AddSpeakerScreenState extends State<AddSpeakerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add a Speaker"),
+        title: const Text("Add a Speaker"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(50.0),
@@ -91,8 +93,8 @@ class _AddSpeakerScreenState extends State<AddSpeakerScreen> {
                 height: 60,
                 child: ElevatedButton.icon(
                   onPressed: () {},
-                  label: Text("Upload the File"),
-                  icon: Icon(Icons.upload_file),
+                  label: const Text("Upload the File"),
+                  icon: const Icon(Icons.upload_file),
                 )),
           ],
         ),

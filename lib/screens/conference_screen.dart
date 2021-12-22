@@ -1,4 +1,5 @@
 import 'package:conf_moderator/screens/add_hall_screen.dart';
+import 'package:conf_moderator/screens/hall_details_screen.dart';
 import 'package:flutter/material.dart';
 
 class ConferenceScreen extends StatefulWidget {
@@ -11,18 +12,15 @@ class ConferenceScreen extends StatefulWidget {
 }
 
 class _AddConferenceScreenState extends State<ConferenceScreen> {
-  final _formKey = GlobalKey<FormState>();
   late ScrollController _scrollController;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _scrollController = ScrollController();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _scrollController.dispose();
     super.dispose();
   }
@@ -72,7 +70,7 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
                 ),
                 SizedBox(
                   width: 500,
-                  height: 60,
+                  height: 50,
                   child: ElevatedButton(
                       onPressed: () {
                         Navigator.of(context)
@@ -89,11 +87,11 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
                   child: GridView.builder(
                     controller: _scrollController,
                     itemCount: 10,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
+                      crossAxisCount: 7,
                       childAspectRatio: 1.5 / 2,
                     ),
                     itemBuilder: (context, idx) {
@@ -103,11 +101,16 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: InkWell(
-                          onTap: () {},
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                                HallDetailsScreen.routeName,
+                                arguments: idx.toString());
+                          },
                           child: Center(
                             child: Text(
                               "Hall NO. $idx",
-                              style: const TextStyle(fontSize: 40),
+                              style: const TextStyle(fontSize: 30),
                             ),
                           ),
                         ),

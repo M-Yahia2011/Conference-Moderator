@@ -3,34 +3,35 @@ import 'package:flutter/material.dart';
 class SessionDetailsScreen extends StatelessWidget {
   static const routeName = "/session_details";
 
-
+  const SessionDetailsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-      final int hallID = 0;
+    final String sessionID =
+        ModalRoute.of(context)!.settings.arguments as String;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Hall ${hallID.toString()}"),
+        title: Text("Session ${sessionID.toString()}"),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 200, vertical: 50),
+        padding: const EdgeInsets.symmetric(horizontal: 200, vertical: 10),
         child: ListView.builder(itemBuilder: (context, idx) {
           return Card(
             child: Column(
               children: [
-                Text("Dr. Assem"),
-                Text("From: 13:00 PM"),
-                Text("To: 15:00 PM"),
-                Text("Open File"),
+                const Text("Dr. Assem"),
+                const Text("From: 13:00 PM"),
+                const Text("To: 15:00 PM"),
+                const Text("Open File"),
                 Row(
                   children: [
                     ElevatedButton(
                       onPressed: () {},
-                      child: Text("Upload File"),
+                      child: const Text("Upload File"),
                     ),
                     ElevatedButton(
                       onPressed: () {},
-                      child: Text("Remove File"),
+                      child: const Text("Remove File"),
                     ),
                   ],
                 )

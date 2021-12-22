@@ -1,6 +1,6 @@
 import 'package:conf_moderator/screens/add_session_screen.dart';
+import 'package:conf_moderator/screens/session_details_screen.dart';
 import 'package:flutter/material.dart';
-
 
 class AddHallScreen extends StatefulWidget {
   const AddHallScreen({Key? key}) : super(key: key);
@@ -10,17 +10,15 @@ class AddHallScreen extends StatefulWidget {
 }
 
 class _AddHallScreenState extends State<AddHallScreen> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add a hall"),
+        title: const Text("Add a hall"),
         centerTitle: true,
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 300, vertical: 50),
+        padding: const EdgeInsets.symmetric(horizontal: 300, vertical: 10),
         child: Form(
           // key: ,
           child: Column(
@@ -40,11 +38,10 @@ class _AddHallScreenState extends State<AddHallScreen> {
                       border: InputBorder.none),
                 ),
               ),
-             
               Container(
                 width: double.infinity,
                 height: 60,
-                margin: EdgeInsets.all(15),
+                margin: const EdgeInsets.all(15),
                 child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context)
@@ -59,18 +56,24 @@ class _AddHallScreenState extends State<AddHallScreen> {
                 child: Scrollbar(
                   isAlwaysShown: true,
                   child: GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 5, childAspectRatio: 1.5 / 2),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 5, childAspectRatio: 1.5 / 2),
                       itemCount: 10,
                       itemBuilder: (ctx, idx) {
-                        return Container(
+                        return SizedBox(
                           height: 200,
                           width: 200,
                           child: Card(
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15)),
+                                borderRadius: BorderRadius.circular(20)),
                             child: InkWell(
-                              onTap: () {},
+                              borderRadius: BorderRadius.circular(20),
+                              onTap: () {
+                                Navigator.of(context).pushNamed(
+                                    SessionDetailsScreen.routeName,
+                                    arguments: idx.toString());
+                              },
                               child: Center(child: Text("session $idx")),
                             ),
                           ),
