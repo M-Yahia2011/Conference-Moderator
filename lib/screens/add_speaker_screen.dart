@@ -1,4 +1,6 @@
+import 'package:conf_moderator/providers/conf_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AddSpeakerScreen extends StatefulWidget {
   static const routeName = "/add_speaker";
@@ -10,10 +12,28 @@ class AddSpeakerScreen extends StatefulWidget {
 }
 
 class _AddSpeakerScreenState extends State<AddSpeakerScreen> {
-  TimeOfDay? endTime;
   TimeOfDay? startTime;
+  TimeOfDay? endTime;
+  late TextEditingController _textController;
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController();
+  }
+
+  Future<void> addSpeaker(
+      String sessionID, Map<String, String> speakerInfo) async {
+    try {
+      Provider.of<ConferenceProvider>(context, listen: false)
+          .addSpeaker(sessionID, speakerInfo);
+    } catch (e) {
+      print("Speaker send Error");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    String sessionID = ModalRoute.of(context)?.settings.arguments as String;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add a Speaker"),
@@ -30,7 +50,8 @@ class _AddSpeakerScreenState extends State<AddSpeakerScreen> {
               decoration: BoxDecoration(
                   color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(15)),
-              child: TextFormField(
+              child: TextField(
+                controller: _textController,
                 decoration: const InputDecoration(
                     contentPadding: EdgeInsets.symmetric(horizontal: 8),
                     labelText: "Speaker's Name",
@@ -90,13 +111,39 @@ class _AddSpeakerScreenState extends State<AddSpeakerScreen> {
               ],
             ),
             SizedBox(
-                width: 300,
-                height: 50,
-                child: ElevatedButton.icon(
-                  onPressed: () {},
-                  label: const Text("Upload the File"),
-                  icon: const Icon(Icons.upload_file),
-                )),
+              height: 300,
+              width: 400,
+              child: Card(
+                elevation: 10,
+                child: Column(
+                  children: [
+                    const Text("Drag and Drop the file"),
+                    ElevatedButton.icon(
+                      onPressed: () {},
+                      label: const Text("Choose the file"),
+                      icon: const Icon(Icons.upload_file),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 40,
+              width: 200,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  Map<String, String> speakerInfo = {
+                    "speakerName": _textController.text,
+                    "startTime": startTime!.format(context),
+                    "endTime": endTime!.format(context),
+                    "filePath": ""
+                  };
+                  await addSpeaker(sessionID, speakerInfo);
+                },
+                icon: const Icon(Icons.save),
+                label: const Text("Save"),
+              ),
+            ),
           ],
         ),
       ),

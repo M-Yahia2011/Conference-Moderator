@@ -1,9 +1,12 @@
+import '/providers/conf_provider.dart';
 import 'package:conf_moderator/screens/add_speaker_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:provider/provider.dart';
 
 class AddSessionScreen extends StatefulWidget {
   static const routeName = "/add_session";
+  
   const AddSessionScreen({Key? key}) : super(key: key);
 
   @override
@@ -14,6 +17,9 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
   DateTime? pickedDate;
   @override
   Widget build(BuildContext context) {
+    
+    // Provider.of<ConferenceProvider>(context, listen: false)
+    //     .getSessionbyID("1", widget.sessionID);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add a session"),
@@ -51,11 +57,12 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
                 height: 60,
                 child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(AddSpeakerScreen.routeName);
+                      Navigator.of(context).pushNamed(
+                          AddSpeakerScreen.routeName,
+                          arguments: "1");
                     },
                     child: const Text("Add a Speaker",
-                        style:  TextStyle(fontSize: 20)))),
+                        style: TextStyle(fontSize: 20)))),
             Expanded(
               child: ListView.builder(
                   itemCount: 10,
@@ -64,7 +71,8 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
                       height: 200,
                       width: 200,
                       child: Card(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(20),
                           onTap: () {},

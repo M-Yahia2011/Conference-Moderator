@@ -1,6 +1,9 @@
+import 'package:conf_moderator/providers/conf_provider.dart';
 import 'package:conf_moderator/screens/add_session_screen.dart';
 import 'package:conf_moderator/screens/session_details_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_overlay/loading_overlay.dart';
+import 'package:provider/provider.dart';
 
 class AddHallScreen extends StatefulWidget {
   const AddHallScreen({Key? key}) : super(key: key);
@@ -10,6 +13,41 @@ class AddHallScreen extends StatefulWidget {
 }
 
 class _AddHallScreenState extends State<AddHallScreen> {
+  late TextEditingController _textEditingController;
+  bool _isLoading = false;
+  bool _isAdded = false;
+  Future<void> addHall(Map<String, dynamic> hallInfo) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      await Provider.of<ConferenceProvider>(context, listen: false)
+          .addHall(hallInfo);
+      setState(() {
+        _isLoading = false;
+        _isAdded = true;
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Start adding sessions!")));
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _textEditingController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,10 +55,11 @@ class _AddHallScreenState extends State<AddHallScreen> {
         title: const Text("Add a hall"),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 300, vertical: 10),
-        child: Form(
-          // key: ,
+      body: LoadingOverlay(
+        isLoading: _isLoading,
+        // opacity: 0,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 300, vertical: 10),
           child: Column(
             children: [
               Container(
@@ -30,7 +69,8 @@ class _AddHallScreenState extends State<AddHallScreen> {
                 decoration: BoxDecoration(
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(15)),
-                child: TextFormField(
+                child: TextField(
+                  controller: _textEditingController,
                   decoration: const InputDecoration(
                       contentPadding: EdgeInsets.symmetric(horizontal: 8),
                       labelText: "Hall Name",
@@ -46,10 +86,12 @@ class _AddHallScreenState extends State<AddHallScreen> {
                     height: 40,
                     margin: const EdgeInsets.all(15),
                     child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context)
-                              .pushNamed(AddSessionScreen.routeName);
-                        },
+                        onPressed: _isAdded == true
+                            ? () {
+                                Navigator.of(context)
+                                    .pushNamed(AddSessionScreen.routeName);
+                              }
+                            : null,
                         child: const Text(
                           "Add a Session",
                           style: TextStyle(fontSize: 25),
@@ -60,14 +102,19 @@ class _AddHallScreenState extends State<AddHallScreen> {
                     height: 40,
                     margin: const EdgeInsets.all(15),
                     child: ElevatedButton(
-                        onPressed: () {
-                          // SAVE EVERYTHING HERE
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          "Done",
-                          style: TextStyle(fontSize: 25),
-                        )),
+                      onPressed: () async {
+                        Map<String, dynamic> hallInfo = {
+                          "hallName": _textEditingController.text,
+                          "sessions": []
+                        };
+
+                        await addHall(hallInfo);
+                      },
+                      child: const Text(
+                        "Save",
+                        style: TextStyle(fontSize: 25),
+                      ),
+                    ),
                   ),
                 ],
               ),
