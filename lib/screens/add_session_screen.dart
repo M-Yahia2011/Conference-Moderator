@@ -53,8 +53,8 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
               height: 15,
             ),
             SizedBox(
-                width: 500,
-                height: 60,
+                width: 300,
+                height: 40,
                 child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pushNamed(

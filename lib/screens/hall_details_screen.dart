@@ -131,6 +131,7 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                           };
 
                           await addSession(hall.hallID, sessionInfo);
+                          _textEditingController.clear();
                         }
                       },
                       child: const Text(
@@ -169,9 +170,10 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                               FittedBox(
                                 child: Text(
                                   hall.sessions[idx].sessionName,
-                                  style: const TextStyle(fontSize: 25),
+                                  style: const TextStyle(fontSize: 22),
                                 ),
                               ),
+                              
                               FittedBox(
                                 child: Text(
                                   hall.sessions[idx].sessionDate,
@@ -184,58 +186,9 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                       );
                     },
                   ),
-
-                  //  ListView.builder(
-                  //       itemCount: hall.sessions.length,
-                  //       itemBuilder: (context, idx) {
-                  //         return Card(
-                  //           child: InkWell(
-                  //             onTap: () {
-                  //               Navigator.of(context)
-                  //                   .pushNamed(SessionDetailsScreen.routeName, arguments: hall.sessions[idx]);
-                  //             },
-                  //             child: Padding(
-                  //               padding: const EdgeInsets.all(8.0),
-                  //               child: Column(
-                  //                 children: [
-                  //                   Text("Session: ${hall.sessions[idx].sessionName}"),
-                  //                   Text("Date: ${hall.sessions[idx].sessionDate}"),
-
-                  //                 ],
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         );
-                  //        }),
                 ),
               ],
-            )
-            //     Consumer<ConferenceProvider>(builder: (ctx, conferenceProvider, _) {
-            //   final sessions = hall.sessions;
-            //   return ListView.builder(
-            //       itemCount: sessions.length,
-            //       itemBuilder: (context, idx) {
-            //         return Card(
-            //           child: InkWell(
-            //             onTap: () {
-            //               Navigator.of(context)
-            //                   .pushNamed(SessionDetailsScreen.routeName, arguments: sessions[idx]);
-            //             },
-            //             child: Padding(
-            //               padding: const EdgeInsets.all(8.0),
-            //               child: Column(
-            //                 children: [
-            //                   Text("Session: ${sessions[idx].sessionName}"),
-            //                   Text("Date: ${sessions[idx].sessionDate}"),
-
-            //                 ],
-            //               ),
-            //             ),
-            //           ),
-            //         );
-            //       });
-            // }),
-            ),
+            )),
       ),
     );
   }
