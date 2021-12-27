@@ -111,9 +111,6 @@ class ConferenceProvider with ChangeNotifier {
     }
   }
 
-  // all of this get logic should be done on server-side
-  // here you'll need just the sessionID for that endpoint
-
   Session? getSessionbyID(int sessionID) {
     for (var hall in _halls) {
       for (var session in hall.sessions) {
