@@ -1,64 +1,21 @@
-import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:conf_moderator/models/hall.dart';
-import 'package:conf_moderator/models/session.dart';
-import 'package:conf_moderator/models/speaker.dart';
+import 'dart:html' as html;
+import '/models/hall.dart';
+import '/models/session.dart';
+import '/models/speaker.dart';
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
+
 
 class ConferenceProvider with ChangeNotifier {
   // ignore: prefer_final_fields
-  List<Hall> _halls = [
-    // Hall(hallID: "1", hallName: "Hall 101", sessions: [
-    //   Session(
-    //       sessionID: "1",
-    //       sessionName: "anything",
-    //       sessionDate: "11/11/2011",
-    //       speakers: [
-    //         Speaker(
-    //           speakerID: "100",
-    //           speakerName: "Dr. Jack",
-    //           startTime: "13:00 PM",
-    //           endTime: "15:00 PM",
-    //           filePath: "some path",
-    //         )
-    //       ])
-    // ]),
-    Hall(hallID: "2", hallName: "Hall 505", sessions: [
-      Session(
-          sessionID: "11321",
-          sessionName: "session name",
-          sessionDate: "15/11/2011",
-          speakers: [
-            Speaker(
-              speakerID: "13256",
-              speakerName: "Dr. Emerson",
-              subjectName: "subject name",
-              startTime: "13:00 PM",
-              endTime: "15:00 PM",
-              filePath: "some path",
-            )
-          ])
-    ]),
-    // Hall(hallID: "78", hallName: "Hall 801", sessions: [
-    //   Session(
-    //       sessionID: "65",
-    //       sessionName: "anything 56435454",
-    //       sessionDate: "22/11/2022",
-    //       speakers: [
-    //         Speaker(
-    //           speakerID: "236483",
-    //           speakerName: "Dr. Sam",
-    //           startTime: "13:00 PM",
-    //           endTime: "15:00 PM",
-    //           filePath: "some path",
-    //         )
-    //       ])
-    // ]),
-  ];
-  Dio _dio = Dio();
-  String _mainEndPoint = "";
+  List<Hall> _halls = [];
+  List<Speaker> _speakers = [];
+  final Dio _dio = Dio();
+  static const String _mainEndPoint = "http://127.0.0.1:8000";
+  final String _hallsEndpoint = "$_mainEndPoint/halls/";
+  final String _sessionEndpoint = "$_mainEndPoint/sessions/";
+  final String _speakerEndpoint = "$_mainEndPoint/speakers/";
 
   // Future<void> getHalls() async {}
 
@@ -66,60 +23,130 @@ class ConferenceProvider with ChangeNotifier {
     return [..._halls];
   }
 
-  Hall getHallbyID(String id) {
-    return _halls.firstWhere((hall) => hall.hallID == id);
+  List<Speaker> get allSpeakers {
+    return [..._speakers];
   }
 
-  List<Session> getSessions(String hallID) {
+  Hall getHallbyID(int id) {
+    return _halls.firstWhere((hall) => hall.id == id);
+  }
+
+  List<Session> getSessions(int hallID) {
     final Hall hall = getHallbyID(hallID);
     return hall.sessions;
+  }
+
+  Future<Speaker?> getSpeakerById(int id) async {
+    try {
+      Response response = await _dio.get("$_speakerEndpoint$id");
+      final Speaker speaker = Speaker.fromJson(response.data);
+      return speaker;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> getAllHalls() async {
+    try {
+      final response = await _dio.get(
+        _hallsEndpoint,
+      );
+
+      if (response.statusCode! >= 200) {
+        List<Hall> fetchedHalls = [];
+        for (var hall in response.data) {
+          Hall newHall = Hall.fromJson(hall as Map<String, dynamic>);
+
+          fetchedHalls.add(newHall);
+        }
+        _halls = fetchedHalls;
+        notifyListeners();
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+  Future<void> getSuggestions() async {
+    try {
+      final response = await _dio.get(
+        _speakerEndpoint,
+      );
+
+      if (response.statusCode! >= 200) {
+        List<Speaker> fetchedSpeakers = [];
+        for (var speaker in response.data) {
+          Speaker newSpeaker =
+              Speaker.fromJson(speaker as Map<String, dynamic>);
+
+          fetchedSpeakers.add(newSpeaker);
+        }
+        _speakers = fetchedSpeakers;
+        notifyListeners();
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+  Future<void> getAllSpeakers() async {
+    try {
+      final response = await _dio.get(
+        _speakerEndpoint,
+      );
+
+      if (response.statusCode! >= 200) {
+        List<Speaker> fetchedSpeakers = [];
+        for (var speaker in response.data) {
+          Speaker newSpeaker =
+              Speaker.fromJson(speaker as Map<String, dynamic>);
+
+          fetchedSpeakers.add(newSpeaker);
+        }
+        _speakers = fetchedSpeakers;
+        notifyListeners();
+      }
+    } catch (e) {
+      throw e;
+    }
   }
 
   // all of this get logic should be done on server-side
   // here you'll need just the sessionID for that endpoint
 
-  Session getSessionbyID(String hallID, String sessionID) {
-    // final dio = Dio();
-    final sessions = getSessions(hallID);
-    return sessions.firstWhere((session) => session.sessionID == sessionID);
+  Session? getSessionbyID(int sessionID) {
+    for (var hall in _halls) {
+      for (var session in hall.sessions) {
+        if (session.id == sessionID) {
+          return session;
+        }
+      }
+    }
   }
 
-  Speaker getSpeakerbyID(String speakerID, String sessionID, String hallID) {
-    Session session = getSessionbyID(hallID, sessionID);
-    return session.speakers
-        .firstWhere((speaker) => speakerID == speaker.speakerID);
+  void removeSessionLocally(int sessionID) {}
+
+  int getHallIdx(int hallID) {
+    int i = 0;
+    for (i; i < _halls.length; i++) {
+      if (hallID == _halls[i].id) {
+        return i;
+      }
+    }
+    return -1;
   }
 
-  List<Speaker> getSpeakers(String sessionID) {
-    final session = getSessionbyID("1", sessionID);
-    return session.speakers;
+  Speaker getLocalSpeakerbyID(int speakerID, int sessionID) {
+    Session? session = getSessionbyID(sessionID);
+    return session!.speakers.firstWhere((speaker) => speakerID == speaker.id);
   }
 
   Future<void> addHall(Map<String, dynamic> hallInfo) async {
     try {
-      // Response response = await _dio.post(_mainEndPoint, data: hallInfo);
-      // if(response.statusCode! > 200){
-
-      // Hall newHall = Hall.fromMap(response.data);
-      // _halls.add(newHall);
-      // }
-      var hall = Hall(hallID: "1", hallName: hallInfo["hallName"], sessions: [
-        Session(
-            sessionID: "65",
-            sessionName: "session Name",
-            sessionDate: "22/1/2022",
-            speakers: [
-              Speaker(
-                speakerID: "236483",
-                speakerName: "Dr. Sam",
-                subjectName: "",
-                startTime: "13:00 PM",
-                endTime: "15:00 PM",
-                filePath: "some path",
-              )
-            ])
-      ]);
-      _halls.add(hall);
+      Response response = await _dio.post(_hallsEndpoint,
+          data: hallInfo, options: Options(contentType: "application/json"));
+      if (response.statusCode! >= 200) {
+        var newHall = Hall.fromJson(response.data);
+        _halls.add(newHall);
+      }
 
       notifyListeners();
     } catch (e) {
@@ -127,54 +154,126 @@ class ConferenceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addSession(String hallID, Map<String, dynamic> session) async {
-    Hall hall = getHallbyID(hallID);
-    hall.sessions.add(Session(
-        sessionID: "1",
-        sessionName: session["sessionName"],
-        sessionDate: session["sessionDate"],
-        speakers: []));
-    notifyListeners();
+  Future<void> addSession(int hallID, Map<String, dynamic> sessionInfo) async {
+    try {
+      Response response = await _dio.post(_sessionEndpoint,
+          data: sessionInfo, options: Options(contentType: "application/json"));
+      if (response.statusCode! >= 200) {
+        print(response.data);
+        var newSession = Session.fromJson(response.data);
+        var hall = getHallbyID(hallID);
+        hall.sessions.add(newSession);
+        notifyListeners();
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 
   Future<void> addSpeaker(
-      String sessionID, Map<String, dynamic> speakerInfo) async {
-    // after reciving the speakerid update the speakerInfo map then create the object and add it
-    final session = getSessionbyID("1", sessionID);
-    session.speakers.add(Speaker(
-        speakerID: "1",
-        speakerName: speakerInfo["speakerName"],
-        subjectName: "",
-        startTime: speakerInfo["startTime"],
-        endTime: speakerInfo["endTime"],
-        filePath: ""));
-    notifyListeners();
+      int sessionID, Map<String, dynamic> speakerInfo) async {
+    try {
+      Response response = await _dio.post(_speakerEndpoint,
+          data: speakerInfo, options: Options(contentType: "application/json"));
+      if (response.statusCode! >= 200) {
+        var newSpeaker = Speaker.fromJson(response.data);
+
+        var session = getSessionbyID(sessionID);
+        session!.speakers.add(newSpeaker);
+        _speakers.add(newSpeaker);
+        notifyListeners();
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 
   // this will be used as a seperate functionality
   // it will run when the guest hand over the flash drive
-  Future<void> uploadFile(
-      List<Map<String, dynamic>> files, String speakerID) async {
+  Future<bool> uploadFile(PlatformFile file, int speakerID) async {
     try {
-      var formData = FormData();
-      for (var fileMap in files) {
-        formData.files.add(
-          MapEntry(
-              "file", MultipartFile.fromBytes(fileMap["file"], filename: fileMap["fileName"]))
-        );
-        print(formData.files);
-        print(formData.fields);
+      FormData formData = FormData.fromMap({
+        "file": MultipartFile.fromBytes(file.bytes as List<int>,
+            filename: file.name)
+      });
+      String uploadEndpoint = "/speaker/upload-file/?speaker_id=$speakerID";
+      Response response =
+          await _dio.post("$_mainEndPoint$uploadEndpoint", data: formData);
+      if (response.statusCode! >= 200) {
+        return true;
+      } else {
+        return false;
       }
+    } catch (e) {
+      print(e);
 
-      // Response response = await _dio.post("", data: formData);
-      // if (response.statusCode! >= 200) {}
-    } catch (e) {}
+      return false;
+    }
   }
 
-  Future<void> deleteFile(String speakerID) async {}
-  Future<void> deleteHall(String hallID) async {}
-  Future<void> deleteSession(String sessionID) async {}
-  Future<void> deleteSpeaker(String speakerID) async {}
+  Future<void> downloadFile(int speakerID) async {
+    try {
+      String url =
+          "http://127.0.0.1:8000/speaker/downlod-file/?spaker_id=$speakerID";
+      html.AnchorElement anchorElement = html.AnchorElement(href: url);
+      anchorElement.download = url;
+      anchorElement.click();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> deleteFile(Speaker speaker) async {
+    try {
+      await _dio.delete(
+          "http://127.0.0.1:8000/speaker/delete-file?speaker_id=${speaker.id}");
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<void> deleteHall(int hallID) async {
+    try {
+      Response response = await _dio.delete("$_hallsEndpoint$hallID");
+      if (response.statusCode! >= 200) {
+        _halls.removeWhere((hall) => hall.id == hallID);
+        await getAllSpeakers();
+        notifyListeners();
+        print("deleted");
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<void> deleteSession(int sessionID) async {
+    try {
+      Response response = await _dio.delete("$_sessionEndpoint$sessionID");
+      if (response.statusCode! >= 200) {
+        // removeSessionLocally(sessionID);
+        int i = 0;
+        for (var hall in _halls) {
+          for (i; i < hall.sessions.length; i++) {
+            if (hall.sessions[i].id == sessionID) {
+              hall.sessions.remove(hall.sessions[i]);
+              await getAllSpeakers();
+              break;
+            }
+          }
+        }
+      }
+      notifyListeners();
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<void> deleteSpeaker(int speakerID) async {
+    getAllSpeakers();
+  }
+
   Future<void> deleteAllHalls() async {
     _halls.clear();
     notifyListeners();

@@ -1,12 +1,14 @@
 import 'package:conf_moderator/models/hall.dart';
+import 'package:conf_moderator/models/session.dart';
 import 'package:conf_moderator/providers/conf_provider.dart';
 import 'package:conf_moderator/screens/session_details_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart' as intl;
 
-import 'add_session_screen.dart';
+// import 'add_session_screen.dart';
 
 class HallDetailsScreen extends StatefulWidget {
   static const routeName = "/hallDetailsScreen";
@@ -33,8 +35,7 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
     super.dispose();
   }
 
-  Future<void> addSession(
-      String hallID, Map<String, dynamic> sessionInfo) async {
+  Future<void> addSession(int hallID, Map<String, dynamic> sessionInfo) async {
     try {
       setState(() {
         _isLoading = true;
@@ -52,15 +53,34 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
     }
   }
 
+  Future<void> deleteSession(int sessionID) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      await Provider.of<ConferenceProvider>(context, listen: false)
+          .deleteSession(sessionID);
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      throw e;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Hall hall = ModalRoute.of(context)?.settings.arguments as Hall;
     return Scaffold(
       appBar: AppBar(
-        title: Text(hall.hallName),
+        title: Text(hall.name),
       ),
       body: LoadingOverlay(
         isLoading: _isLoading,
+        color: Colors.transparent,
         child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
             child: Column(
@@ -68,7 +88,7 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
               children: [
                 Container(
                   height: 60,
-                  width: 300,
+                  width: 600,
                   padding: const EdgeInsets.all(4),
                   margin: const EdgeInsets.symmetric(vertical: 15),
                   decoration: BoxDecoration(
@@ -123,14 +143,14 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                                       "You must enter the session Name!")));
                         } else {
                           Map<String, dynamic> sessionInfo = {
-                            "sessionName": _textEditingController.text,
-                            "speakers": [],
-                            "sessionDate": intl.DateFormat.yMMMEd()
+                            "name": _textEditingController.text,
+                            "hall_id": hall.id,
+                            "date": intl.DateFormat.yMMMEd()
                                 .format(_pickedDate!)
                                 .toString()
                           };
 
-                          await addSession(hall.hallID, sessionInfo);
+                          await addSession(hall.id, sessionInfo);
                           _textEditingController.clear();
                         }
                       },
@@ -151,38 +171,60 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                       childAspectRatio: 1.5 / 2,
                     ),
                     itemBuilder: (context, idx) {
-                      return Card(
-                        margin: const EdgeInsets.all(15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(20),
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                                SessionDetailsScreen.routeName,
-                                arguments: hall.sessions[idx]);
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              FittedBox(
-                                child: Text(
-                                  hall.sessions[idx].sessionName,
-                                  style: const TextStyle(fontSize: 22),
+                      return Stack(
+                        children: [
+                          Container(
+                            height: 600,
+                            width: 300,
+                            child: Card(
+                              margin: const EdgeInsets.all(15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(20),
+                                onTap: () {
+                                  Navigator.of(context).pushNamed(
+                                      SessionDetailsScreen.routeName,
+                                      arguments: hall.sessions[idx]);
+                                },
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    FittedBox(
+                                      child: Text(
+                                        hall.sessions[idx].name,
+                                        style: const TextStyle(fontSize: 22),
+                                      ),
+                                    ),
+                                    FittedBox(
+                                      child: Text(
+                                        hall.sessions[idx].date,
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              
-                              FittedBox(
-                                child: Text(
-                                  hall.sessions[idx].sessionDate,
-                                  style: const TextStyle(fontSize: 20),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                          Positioned(
+                            right: 20,
+                            top: 20,
+                            child: IconButton(
+                                highlightColor: Colors.transparent,
+                                splashColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                onPressed: () async {
+                                  await deleteSession(hall.sessions[idx].id);
+                                },
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                )),
+                          ),
+                        ],
                       );
                     },
                   ),
@@ -193,3 +235,17 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
     );
   }
 }
+
+// class SessionCard extends StatelessWidget {
+//   const SessionCard({
+//     Key? key,
+//     required this.session,
+//   }) : super(key: key);
+
+//   final Session session;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return 
+//   }
+// }
