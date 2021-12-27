@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:conf_moderator/models/session.dart';
 import 'package:conf_moderator/providers/conf_provider.dart';
 import 'package:file_picker/file_picker.dart';
@@ -40,7 +37,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
       setState(() {
         _isloading = false;
       });
-      throw e;
+      rethrow;
     }
   }
 
@@ -86,7 +83,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
       setState(() {
         _isloading = false;
       });
-      throw e;
+      rethrow;
     }
   }
 
@@ -315,7 +312,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                                                     .downloadFile(
                                                         speakers[idx].id);
                                               } catch (e) {
-                                                throw e;
+                                                rethrow;
                                               }
                                             },
                                             child: const Text(
@@ -342,7 +339,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                                                   speakers[idx].file = "";
                                                 });
                                               } catch (e) {
-                                                throw e;
+                                                rethrow;
                                               }
                                             },
                                             style: ElevatedButton.styleFrom(

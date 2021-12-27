@@ -1,3 +1,4 @@
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import '/models/hall.dart';
 import '/models/session.dart';
@@ -5,7 +6,6 @@ import '/models/speaker.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
-
 
 class ConferenceProvider with ChangeNotifier {
   // ignore: prefer_final_fields
@@ -63,9 +63,10 @@ class ConferenceProvider with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
+
   Future<void> getSuggestions() async {
     try {
       final response = await _dio.get(
@@ -84,9 +85,10 @@ class ConferenceProvider with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
+
   Future<void> getAllSpeakers() async {
     try {
       final response = await _dio.get(
@@ -105,7 +107,7 @@ class ConferenceProvider with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -159,14 +161,12 @@ class ConferenceProvider with ChangeNotifier {
       Response response = await _dio.post(_sessionEndpoint,
           data: sessionInfo, options: Options(contentType: "application/json"));
       if (response.statusCode! >= 200) {
-        print(response.data);
         var newSession = Session.fromJson(response.data);
         var hall = getHallbyID(hallID);
         hall.sessions.add(newSession);
         notifyListeners();
       }
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -185,7 +185,6 @@ class ConferenceProvider with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -207,8 +206,6 @@ class ConferenceProvider with ChangeNotifier {
         return false;
       }
     } catch (e) {
-      print(e);
-
       return false;
     }
   }
@@ -221,7 +218,7 @@ class ConferenceProvider with ChangeNotifier {
       anchorElement.download = url;
       anchorElement.click();
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 
@@ -230,7 +227,7 @@ class ConferenceProvider with ChangeNotifier {
       await _dio.delete(
           "http://127.0.0.1:8000/speaker/delete-file?speaker_id=${speaker.id}");
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -241,10 +238,9 @@ class ConferenceProvider with ChangeNotifier {
         _halls.removeWhere((hall) => hall.id == hallID);
         await getAllSpeakers();
         notifyListeners();
-        print("deleted");
       }
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -266,7 +262,7 @@ class ConferenceProvider with ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 

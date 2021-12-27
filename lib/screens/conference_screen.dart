@@ -18,25 +18,6 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
   late ScrollController _scrollController;
   late TextEditingController _textEditingController;
   bool _isLoading = false;
-  bool _isAdded = false;
-  Future? _future;
-
-  // Future<void> fetchAllHalls() async {
-  //   try {
-  //     setState(() {
-  //       _isLoading = true;
-  //     });
-  //     Provider.of<ConferenceProvider>(context, listen: false).getAllHalls();
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       _isLoading = false;
-  //       throw e;
-  //     });
-  //   }
-  // }
 
   Future<void> addHall(Map<String, dynamic> hallInfo) async {
     try {
@@ -47,7 +28,7 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
           .addHall(hallInfo);
       setState(() {
         _isLoading = false;
-        _isAdded = true;
+
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Start adding sessions!")));
       });
@@ -55,7 +36,7 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
       setState(() {
         _isLoading = false;
       });
-      throw e;
+      rethrow;
     }
   }
 
@@ -79,100 +60,86 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
       appBar: AppBar(
         title: const Text("Conference Manager"),
         centerTitle: true,
-
-        // actions: [
-        //   IconButton(
-        //       onPressed: () {
-        //         setState(() {
-        //           // _isSearching = true;
-        //         });
-        //       },
-        //       icon: const Icon(
-        //         Icons.search_rounded,
-        //         size: 30,
-        //       )),
-        // ],
       ),
       backgroundColor: Colors.grey[100],
       body: SafeArea(
-        child:LoadingOverlay(
-                isLoading: _isLoading,
-                color: Colors.transparent,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 50),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 60,
-                          width: 500,
-                          padding: const EdgeInsets.all(4),
-                          margin: const EdgeInsets.symmetric(vertical: 15),
-                          decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(15)),
-                          child: TextField(
-                            controller: _textEditingController,
-                            decoration: const InputDecoration(
-                                // contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                                labelText: "Hall Name",
-                                labelStyle: TextStyle(color: Colors.black),
-                                border: InputBorder.none),
-                          ),
-                        ),
-                        Container(
-                          width: 300,
-                          height: 40,
-                          margin: const EdgeInsets.all(15),
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (_textEditingController.text.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            "You must enter a hall name!")));
-                              } else {
-                                Map<String, dynamic> hallInfo = {
-                                  "name": _textEditingController.text,
-                                };
-
-                                await addHall(hallInfo);
-                                _textEditingController.clear();
-                              }
-                            },
-                            child: const Text(
-                              "Add a new Hall",
-                              style: TextStyle(fontSize: 25),
-                            ),
-                          ),
-                        ),
-                        ScrollConfiguration(
-                          behavior: ScrollConfiguration.of(context)
-                              .copyWith(scrollbars: false),
-                          child: Consumer<ConferenceProvider>(
-                            builder: (ctx, conferenceProvider, _) =>
-                                GridView.builder(
-                              controller: _scrollController,
-                              itemCount: conferenceProvider.allHalls.length,
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 7,
-                                childAspectRatio: 1.5 / 2,
-                              ),
-                              itemBuilder: (context, idx) {
-                                return HallCard(
-                                    hall: conferenceProvider.allHalls[idx]);
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
+        child: LoadingOverlay(
+          isLoading: _isLoading,
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 50),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    height: 60,
+                    width: 500,
+                    padding: const EdgeInsets.all(4),
+                    margin: const EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(15)),
+                    child: TextField(
+                      controller: _textEditingController,
+                      decoration: const InputDecoration(
+                          // contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                          labelText: "Hall Name",
+                          labelStyle: TextStyle(color: Colors.black),
+                          border: InputBorder.none),
                     ),
                   ),
-                ),
+                  Container(
+                    width: 300,
+                    height: 40,
+                    margin: const EdgeInsets.all(15),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (_textEditingController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text("You must enter a hall name!")));
+                        } else {
+                          Map<String, dynamic> hallInfo = {
+                            "name": _textEditingController.text,
+                          };
+
+                          await addHall(hallInfo);
+                          _textEditingController.clear();
+                        }
+                      },
+                      child: const Text(
+                        "Add a new Hall",
+                        style: TextStyle(fontSize: 25),
+                      ),
+                    ),
+                  ),
+                  ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context)
+                        .copyWith(scrollbars: false),
+                    child: Consumer<ConferenceProvider>(
+                      builder: (ctx, conferenceProvider, _) => GridView.builder(
+                        controller: _scrollController,
+                        itemCount: conferenceProvider.allHalls.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 7,
+                          childAspectRatio: 1.5 / 2,
+                        ),
+                        itemBuilder: (context, idx) {
+                          return HallCard(
+                              hall: conferenceProvider.allHalls[idx]);
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
+            ),
+          ),
+        ),
       ),
     );
   }

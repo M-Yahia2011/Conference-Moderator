@@ -1,12 +1,11 @@
-import 'package:conf_moderator/models/hall.dart';
-import 'package:conf_moderator/models/session.dart';
-import 'package:conf_moderator/providers/conf_provider.dart';
-import 'package:conf_moderator/screens/session_details_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import '/models/hall.dart';
+import '/providers/conf_provider.dart';
+import '/screens/session_details_screen.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart' as intl;
+
 
 // import 'add_session_screen.dart';
 
@@ -67,7 +66,7 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
       setState(() {
         _isLoading = false;
       });
-      throw e;
+      rethrow;
     }
   }
 
@@ -173,7 +172,7 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                     itemBuilder: (context, idx) {
                       return Stack(
                         children: [
-                          Container(
+                          SizedBox(
                             height: 600,
                             width: 300,
                             child: Card(

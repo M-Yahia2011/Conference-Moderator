@@ -1,4 +1,3 @@
-import 'package:conf_moderator/models/hall.dart';
 import 'package:flutter/material.dart';
 import '/models/session.dart';
 import '/models/speaker.dart';
@@ -17,26 +16,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Future? _future;
-  bool _isLoading = false;
   late TextEditingController _textEditingControllerSearch;
   Future<void> fetchAllHalls() async {
     try {
-      setState(() {
-        _isLoading = true;
-      });
       await Provider.of<ConferenceProvider>(context, listen: false)
           .getAllHalls();
       await Provider.of<ConferenceProvider>(context, listen: false)
           .getAllSpeakers();
-      setState(() {
-        _isLoading = false;
-      });
     } catch (e) {
-      print(e);
-      setState(() {
-        _isLoading = false;
-      });
-      throw e;
+      rethrow;
     }
   }
 
@@ -66,24 +54,6 @@ class _HomePageState extends State<HomePage> {
       throw "Query problem";
     }
   }
-
-  // Future<List<Hall>> getSearchSuggestions(String query) {
-  //   String queryLower = query.toLowerCase();
-  //   List<Hall> suggestedHalls = [];
-
-  //   List<Hall> halls =
-  //       Provider.of<ConferenceProvider>(context, listen: false).allHalls;
-  //   for (var hall in halls) {
-  //     for (var session in hall.sessions) {
-  //       for (var speaker in session.speakers) {
-  //         if (speaker.name.toLowerCase().contains(queryLower)) {
-  //           suggestedHalls.add(hall);
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return suggestedHalls;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -155,23 +125,26 @@ class _HomePageState extends State<HomePage> {
                             ),
                             itemBuilder: (context, suggestedSpeaker) {
                               return ListTile(
-                                
                                   title: Text(
                                     "${suggestedSpeaker.name} - ${suggestedSpeaker.subject}",
                                     style: const TextStyle(
-                                      fontSize:20,
+                                        fontSize: 20,
                                         overflow: TextOverflow.ellipsis),
                                   ),
                                   trailing: Column(
                                     children: [
-                                      const Text("File status",style: TextStyle(fontSize: 10),),
+                                      const Text(
+                                        "File status",
+                                        style: TextStyle(fontSize: 10),
+                                      ),
                                       suggestedSpeaker.file.isNotEmpty
                                           ? const Icon(
                                               Icons.done,
                                               color: Colors.green,
                                               size: 24,
                                             )
-                                          : const Text("Waiting",style: TextStyle(fontSize: 10)),
+                                          : const Text("Waiting",
+                                              style: TextStyle(fontSize: 10)),
                                     ],
                                   ));
                             },
@@ -206,37 +179,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-/*
-TypeAheadField<Item>(
-                      
-                          onSuggestionSelected: (item) {
-                            _isSearching = false;
-                            Navigator.of(context).pushNamed(
-                                ItemDetailsScreen.routeName,
-                                arguments: item);
-                          },
-                          suggestionsCallback: (query) async =>
-                              getSearchSuggestions(query),
-                          noItemsFoundBuilder: (ctx) => Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "No item was found",
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          itemBuilder: (context, suggestedSpeaker) {
-                            return ListTile(
-                              leading: Image.asset(suggestedSpeaker.image),
-                              title: Text(suggestedSpeaker.name),
-                              // subtitle: Text('subtitle'),
-                            );
-                          },
-                          debounceDuration: Duration(milliseconds: 500),
-                          suggestionsBoxDecoration: SuggestionsBoxDecoration(
-                            borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(8),
-                                bottomRight: Radius.circular(8)),
-                          ),
-                        )
-
-*/
