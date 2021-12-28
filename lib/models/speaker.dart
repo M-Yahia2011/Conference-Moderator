@@ -48,7 +48,7 @@ class Speaker {
         subject: json["subject"],
         startTime: json["start_time"],
         endTime: json["end_time"],
-        file: "",
+        file: json["file"] ?? "",
         sessionId: json["session_id"],
         path: json["path"],
     );

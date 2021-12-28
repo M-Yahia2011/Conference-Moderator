@@ -1,6 +1,6 @@
+import 'package:conf_moderator/models/speaker_suggestion.dart';
 import 'package:flutter/material.dart';
 import '/models/session.dart';
-import '/models/speaker.dart';
 import '/screens/screens.dart';
 import '/providers/conf_provider.dart';
 import 'package:flutter_typeahead2/flutter_typeahead2.dart';
@@ -22,8 +22,11 @@ class _HomePageState extends State<HomePage> {
       await Provider.of<ConferenceProvider>(context, listen: false)
           .getAllHalls();
       await Provider.of<ConferenceProvider>(context, listen: false)
-          .getAllSpeakers();
+          .getSuggestions();
     } catch (e) {
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Error: Check the server!")));
       rethrow;
     }
   }
@@ -41,14 +44,16 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  Future<List<Speaker>> getSearchSuggestions(String query) async {
+  Future<List<SpeakerSuggestion>> getSearchSuggestions(String query) async {
     try {
       String queryLower = query.toLowerCase();
-      List<Speaker> speakers =
-          Provider.of<ConferenceProvider>(context, listen: false).allSpeakers;
+      List<SpeakerSuggestion> suggestions =
+          Provider.of<ConferenceProvider>(context, listen: false)
+              .searchSuggestions;
 
-      return speakers
-          .where((speaker) => speaker.name.toLowerCase().contains(queryLower))
+      return suggestions
+          .where((suggestion) =>
+              suggestion.speaker.name.toLowerCase().contains(queryLower))
           .toList();
     } catch (e) {
       throw "Query problem";
@@ -90,7 +95,7 @@ class _HomePageState extends State<HomePage> {
                           decoration: BoxDecoration(
                               color: Colors.grey[300],
                               borderRadius: BorderRadius.circular(15)),
-                          child: TypeAheadField<Speaker>(
+                          child: TypeAheadField<SpeakerSuggestion>(
                             textFieldConfiguration: TextFieldConfiguration(
                               // focusNode: _focusNode,
                               // autofocus: true,
@@ -104,11 +109,12 @@ class _HomePageState extends State<HomePage> {
                                       TextStyle(color: Colors.grey[600]),
                                   border: InputBorder.none),
                             ),
-                            onSuggestionSelected: (spreaker) {
+                            onSuggestionSelected: (suggestion) {
                               final Session? session =
                                   Provider.of<ConferenceProvider>(context,
                                           listen: false)
-                                      .getSessionbyID(spreaker.sessionId);
+                                      .getSessionbyID(
+                                          suggestion.speaker.sessionId);
                               Navigator.of(context).pushNamed(
                                   SessionDetailsScreen.routeName,
                                   arguments: session);
@@ -123,30 +129,60 @@ class _HomePageState extends State<HomePage> {
                                 style: TextStyle(fontSize: 18),
                               ),
                             ),
-                            itemBuilder: (context, suggestedSpeaker) {
-                              return ListTile(
-                                  title: Text(
-                                    "${suggestedSpeaker.name} - ${suggestedSpeaker.subject}",
-                                    style: const TextStyle(
-                                        fontSize: 20,
-                                        overflow: TextOverflow.ellipsis),
-                                  ),
-                                  trailing: Column(
-                                    children: [
-                                      const Text(
-                                        "File status",
-                                        style: TextStyle(fontSize: 10),
-                                      ),
-                                      suggestedSpeaker.file.isNotEmpty
-                                          ? const Icon(
-                                              Icons.done,
-                                              color: Colors.green,
-                                              size: 24,
-                                            )
-                                          : const Text("Waiting",
-                                              style: TextStyle(fontSize: 10)),
-                                    ],
-                                  ));
+                            itemBuilder: (context, suggestedItem) {
+                            
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      // mainAxisAlignment:
+                                      //     MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text(
+                                          suggestedItem.speaker.name,
+                                          style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              overflow: TextOverflow.ellipsis),
+                                        ),
+                                        const Spacer(),
+                                        suggestedItem.speaker.file.isNotEmpty
+                                            ? const Icon(
+                                                Icons.done,
+                                                color: Colors.green,
+                                                size: 28,
+                                              )
+                                            : const Icon(
+                                                Icons.clear,
+                                                color: Colors.red,
+                                                size: 28,
+                                              ),
+                                      ],
+                                    ),
+                                    Text(
+                                      suggestedItem.speaker.subject,
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          overflow: TextOverflow.ellipsis),
+                                    ),
+                                    Text(
+                                      suggestedItem.sessionName,
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          overflow: TextOverflow.ellipsis),
+                                    ),
+                                    Text(
+                                      suggestedItem.hallName,
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          overflow: TextOverflow.ellipsis),
+                                    ),
+                                  ],
+                                ),
+                              );
                             },
                             debounceDuration: const Duration(milliseconds: 500),
                             suggestionsBoxDecoration:

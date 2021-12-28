@@ -1,4 +1,5 @@
 import 'package:conf_moderator/models/session.dart';
+import 'package:conf_moderator/models/speaker.dart';
 import 'package:conf_moderator/providers/conf_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -83,6 +84,28 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
       setState(() {
         _isloading = false;
       });
+      rethrow;
+    }
+  }
+
+  Future<void> deleteSpeaker(Speaker speaker) async {
+    try {
+      setState(() {
+        _isloading = true;
+      });
+      await Provider.of<ConferenceProvider>(context, listen: false)
+          .deleteSpeaker(speaker);
+      setState(() {
+        _isloading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("The speaker was removed successfully")));
+    } catch (e) {
+      setState(() {
+        _isloading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Error: Couldn't be removed")));
       rethrow;
     }
   }
@@ -250,109 +273,133 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                         itemCount: session.speakers.length,
                         itemBuilder: (context, idx) {
                           final speakers = session.speakers;
-                          return Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: [
-                                  Text(speakers[idx].name),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(speakers[idx].subject),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 400),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Text(
-                                            "From: ${speakers[idx].startTime}"),
-                                        Text("To: ${speakers[idx].endTime}"),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 15),
-                                  if (speakers[idx].file.isEmpty)
-                                    SizedBox(
-                                      height: 40,
-                                      width: 500,
-                                      child: ElevatedButton(
-                                        onPressed: () async {
-                                          await uploadFile(speakers[idx].id);
-                                          setState(() {
-                                            speakers[idx].file =
-                                                "there is a file";
-                                          });
-                                        },
-                                        child: const Text("Upload File",
-                                            style: TextStyle(fontSize: 20)),
+                          return Stack(
+                            children: [
+                              Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      Text(speakers[idx].name),
+                                      const SizedBox(
+                                        height: 10,
                                       ),
-                                    ),
-                                  const SizedBox(height: 15),
-                                  if (speakers[idx].file.isNotEmpty)
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        SizedBox(
-                                          height: 40,
-                                          width: 200,
-                                          child: ElevatedButton(
-                                            onPressed: () async {
-                                              try {
-                                                await Provider.of<
-                                                            ConferenceProvider>(
-                                                        context,
-                                                        listen: false)
-                                                    .downloadFile(
-                                                        speakers[idx].id);
-                                              } catch (e) {
-                                                rethrow;
-                                              }
-                                            },
-                                            child: const Text(
-                                              "Download File",
-                                              style: TextStyle(
-                                                // fontWeight: FontWeight.bold,
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                          ),
+                                      Text(speakers[idx].subject),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 400),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Text(
+                                                "From: ${speakers[idx].startTime}"),
+                                            Text(
+                                                "To: ${speakers[idx].endTime}"),
+                                          ],
                                         ),
+                                      ),
+                                      const SizedBox(height: 15),
+                                      if (speakers[idx].file.isEmpty)
                                         SizedBox(
                                           height: 40,
-                                          width: 200,
+                                          width: 500,
                                           child: ElevatedButton(
                                             onPressed: () async {
-                                              try {
-                                                await Provider.of<
-                                                            ConferenceProvider>(
-                                                        context,
-                                                        listen: false)
-                                                    .deleteFile(speakers[idx]);
-                                                setState(() {
-                                                  speakers[idx].file = "";
-                                                });
-                                              } catch (e) {
-                                                rethrow;
-                                              }
+                                              await uploadFile(
+                                                  speakers[idx].id);
+                                              setState(() {
+                                                speakers[idx].file =
+                                                    "there is a file";
+                                              });
                                             },
-                                            style: ElevatedButton.styleFrom(
-                                                primary: Colors.red),
-                                            child: const Text("Remove File",
+                                            child: const Text("Upload File",
                                                 style: TextStyle(fontSize: 20)),
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                ],
+                                      const SizedBox(height: 15),
+                                      if (speakers[idx].file.isNotEmpty)
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            SizedBox(
+                                              height: 40,
+                                              width: 200,
+                                              child: ElevatedButton(
+                                                onPressed: () async {
+                                                  try {
+                                                    await Provider.of<
+                                                                ConferenceProvider>(
+                                                            context,
+                                                            listen: false)
+                                                        .downloadFile(
+                                                            speakers[idx].id);
+                                                  } catch (e) {
+                                                    rethrow;
+                                                  }
+                                                },
+                                                child: const Text(
+                                                  "Download File",
+                                                  style: TextStyle(
+                                                    // fontWeight: FontWeight.bold,
+                                                    fontSize: 20,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 40,
+                                              width: 200,
+                                              child: ElevatedButton(
+                                                onPressed: () async {
+                                                  try {
+                                                    await Provider.of<
+                                                                ConferenceProvider>(
+                                                            context,
+                                                            listen: false)
+                                                        .deleteFile(
+                                                            speakers[idx]);
+                                                    setState(() {
+                                                      speakers[idx].file = "";
+                                                    });
+                                                  } catch (e) {
+                                                    rethrow;
+                                                  }
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: Colors.red),
+                                                child: const Text("Remove File",
+                                                    style: TextStyle(
+                                                        fontSize: 20)),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
+                              Positioned(
+                                right: 20,
+                                top: 20,
+                                child: IconButton(
+                                    highlightColor: Colors.transparent,
+                                    splashColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                    onPressed: () async {
+                                      
+                                      await deleteSpeaker(speakers[idx]);
+                                    },
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    )),
+                              ),
+                            ],
                           );
                         }),
                   ),
@@ -361,6 +408,20 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          try {
+            await Provider.of<ConferenceProvider>(context, listen: false)
+                .downloadSessionFiles(session.id);
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text("All sesion file has been downloaded")));
+          } catch (e) {
+             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Erorr on downloading")));
+            rethrow;
+          }
+        },
+        child: const Icon(Icons.download),
       ),
     );
   }
