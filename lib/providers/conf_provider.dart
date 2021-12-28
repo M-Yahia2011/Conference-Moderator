@@ -13,12 +13,33 @@ class ConferenceProvider with ChangeNotifier {
   List<Hall> _halls = [];
   List<SpeakerSuggestion> _speakersSuggesions = [];
   final Dio _dio = Dio();
-  static const String _mainEndPoint = "http://192.168.1.1:8000";
-  final String _hallsEndpoint = "$_mainEndPoint/halls/";
-  final String _sessionEndpoint = "$_mainEndPoint/sessions/";
-  final String _speakerEndpoint = "$_mainEndPoint/speakers/";
 
-  // Future<void> getHalls() async {}
+   String _mainEndPoint = "";
+   String _hallsEndpoint = "";
+   String _sessionEndpoint = "";
+   String _speakerEndpoint = "";
+   String _getsuggestionsEndpoint = "";
+
+  void setIP(String ipInput, String portInput) {
+    String ip = ipInput.trim();
+    String port = portInput.trim();
+    _mainEndPoint = "http://" + ip + ":" + port;
+      _hallsEndpoint = "$_mainEndPoint/halls/";
+   _sessionEndpoint = "$_mainEndPoint/sessions/";
+   _speakerEndpoint = "$_mainEndPoint/speakers/";
+   _getsuggestionsEndpoint =
+      "$_mainEndPoint/speakers-search/";
+    notifyListeners();
+   
+  }
+
+  bool isEndpointSetted() {
+    if (_mainEndPoint.isEmpty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   List<Hall> get allHalls {
     return [..._halls];
@@ -71,7 +92,7 @@ class ConferenceProvider with ChangeNotifier {
   Future<void> getSuggestions() async {
     try {
       final response = await _dio.get(
-        "http://192.168.1.1:8000/speakers-search/",
+        _getsuggestionsEndpoint,
       );
 
       if (response.statusCode! >= 200) {
@@ -91,7 +112,6 @@ class ConferenceProvider with ChangeNotifier {
       rethrow;
     }
   }
-
 
   Session? getSessionbyID(int sessionID) {
     for (var hall in _halls) {
@@ -191,7 +211,7 @@ class ConferenceProvider with ChangeNotifier {
   Future<void> downloadFile(int speakerID) async {
     try {
       String url =
-          "http://192.168.1.1:8000/speaker/downlod-file/?spaker_id=$speakerID";
+          "$_mainEndPoint/speaker/downlod-file/?spaker_id=$speakerID";
       html.AnchorElement anchorElement = html.AnchorElement(href: url);
       anchorElement.download = url;
       anchorElement.click();
@@ -202,7 +222,7 @@ class ConferenceProvider with ChangeNotifier {
 
   Future<void> downloadHallFiles(int hallID) async {
     try {
-      String url = "http://192.168.1.1:8000/hall/downlod-folder/?hall_id=$hallID";
+      String url = "$_mainEndPoint/hall/downlod-folder/?hall_id=$hallID";
       html.AnchorElement anchorElement = html.AnchorElement(href: url);
       anchorElement.download = url;
       anchorElement.click();
@@ -214,7 +234,7 @@ class ConferenceProvider with ChangeNotifier {
   Future<void> downloadSessionFiles(int sessionID) async {
     try {
       String url =
-          "http://192.168.1.1:8000/session/downlod-folder/?session_id=$sessionID";
+          "$_mainEndPoint/session/downlod-folder/?session_id=$sessionID";
       html.AnchorElement anchorElement = html.AnchorElement(href: url);
       anchorElement.download = url;
       anchorElement.click();
@@ -226,7 +246,7 @@ class ConferenceProvider with ChangeNotifier {
   Future<void> deleteFile(Speaker speaker) async {
     try {
       await _dio.delete(
-          "http://192.168.1.1:8000/speaker/delete-file?speaker_id=${speaker.id}");
+          "$_mainEndPoint/speaker/delete-file?speaker_id=${speaker.id}");
       final Speaker localSpeaker =
           getLocalSpeakerbyID(speaker.id, speaker.sessionId);
       localSpeaker.file = "";

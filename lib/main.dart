@@ -1,8 +1,9 @@
-import 'package:conf_moderator/helpers/app_theme.dart';
-import 'package:conf_moderator/screens/homePage.dart';
+import '/helpers/app_theme.dart';
+import '/screens/homePage.dart';
+import '/screens/set_IP_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import './/providers/conf_provider.dart';
+import '/providers/conf_provider.dart';
 import './screens/screens.dart';
 void main() => runApp(const MyApp());
 
@@ -16,8 +17,17 @@ class MyApp extends StatelessWidget {
         title: 'Conference Moderator',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
-        home: const HomePage(),
+        home: Consumer<ConferenceProvider>(builder: (context, provider, child) {
+          if(provider.isEndpointSetted()){
+            return const HomePage();
+          }
+          else{
+            return const SetIPScreen();
+          }
+        },),
+        // const HomePage(),
         routes: {
+          SetIPScreen.routeName:(ctx)=> const SetIPScreen(),
           HomePage.routeName: (ctx)=> const HomePage(),
           ConferenceScreen.routeName: (ctx) => const ConferenceScreen(),
           HallDetailsScreen.routeName: (ctx) => const HallDetailsScreen(),

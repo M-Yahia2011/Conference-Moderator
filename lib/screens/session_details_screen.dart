@@ -101,7 +101,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
         _isloading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("The speaker was removed successfully")));
+          content: Text("The speaker was successfully removed")));
     } catch (e) {
       setState(() {
         _isloading = false;
