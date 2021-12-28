@@ -4,10 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './/providers/conf_provider.dart';
 import './screens/screens.dart';
-/*
-Developed by Mohamed Yahia at 28/12/2021
-m.yahia.eid2011@gmail.com 
-*/
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
