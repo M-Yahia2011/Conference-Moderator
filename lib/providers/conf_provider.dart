@@ -1,7 +1,6 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
-import 'package:conf_moderator/models/speaker_suggestion.dart';
-
+import '/models/speaker_suggestion.dart';
 import '/models/hall.dart';
 import '/models/session.dart';
 import '/models/speaker.dart';
@@ -14,7 +13,7 @@ class ConferenceProvider with ChangeNotifier {
   List<Hall> _halls = [];
   List<SpeakerSuggestion> _speakersSuggesions = [];
   final Dio _dio = Dio();
-  static const String _mainEndPoint = "http://127.0.0.1:8000";
+  static const String _mainEndPoint = "http://192.168.1.1:8000";
   final String _hallsEndpoint = "$_mainEndPoint/halls/";
   final String _sessionEndpoint = "$_mainEndPoint/sessions/";
   final String _speakerEndpoint = "$_mainEndPoint/speakers/";
@@ -72,7 +71,7 @@ class ConferenceProvider with ChangeNotifier {
   Future<void> getSuggestions() async {
     try {
       final response = await _dio.get(
-        "http://127.0.0.1:8000/speakers-search/",
+        "http://192.168.1.1:8000/speakers-search/",
       );
 
       if (response.statusCode! >= 200) {
@@ -93,27 +92,6 @@ class ConferenceProvider with ChangeNotifier {
     }
   }
 
-  // Future<void> getAllSpeakers() async {
-  //   try {
-  //     final response = await _dio.get(
-  //       _speakerEndpoint,
-  //     );
-
-  //     if (response.statusCode! >= 200) {
-  //       List<Speaker> fetchedSpeakers = [];
-  //       for (var speaker in response.data) {
-  //         Speaker newSpeaker =
-  //             Speaker.fromJson(speaker as Map<String, dynamic>);
-
-  //         fetchedSpeakers.add(newSpeaker);
-  //       }
-  //       _speakers = fetchedSpeakers;
-  //       notifyListeners();
-  //     }
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
 
   Session? getSessionbyID(int sessionID) {
     for (var hall in _halls) {
@@ -124,7 +102,6 @@ class ConferenceProvider with ChangeNotifier {
       }
     }
   }
-
 
   int getHallIdx(int hallID) {
     int i = 0;
@@ -214,7 +191,7 @@ class ConferenceProvider with ChangeNotifier {
   Future<void> downloadFile(int speakerID) async {
     try {
       String url =
-          "http://127.0.0.1:8000/speaker/downlod-file/?spaker_id=$speakerID";
+          "http://192.168.1.1:8000/speaker/downlod-file/?spaker_id=$speakerID";
       html.AnchorElement anchorElement = html.AnchorElement(href: url);
       anchorElement.download = url;
       anchorElement.click();
@@ -225,7 +202,7 @@ class ConferenceProvider with ChangeNotifier {
 
   Future<void> downloadHallFiles(int hallID) async {
     try {
-      String url = "http://127.0.0.1:8000/hall/downlod-folder/?hall_id=$hallID";
+      String url = "http://192.168.1.1:8000/hall/downlod-folder/?hall_id=$hallID";
       html.AnchorElement anchorElement = html.AnchorElement(href: url);
       anchorElement.download = url;
       anchorElement.click();
@@ -237,7 +214,7 @@ class ConferenceProvider with ChangeNotifier {
   Future<void> downloadSessionFiles(int sessionID) async {
     try {
       String url =
-          "http://127.0.0.1:8000/session/downlod-folder/?session_id=$sessionID";
+          "http://192.168.1.1:8000/session/downlod-folder/?session_id=$sessionID";
       html.AnchorElement anchorElement = html.AnchorElement(href: url);
       anchorElement.download = url;
       anchorElement.click();
@@ -249,8 +226,9 @@ class ConferenceProvider with ChangeNotifier {
   Future<void> deleteFile(Speaker speaker) async {
     try {
       await _dio.delete(
-          "http://127.0.0.1:8000/speaker/delete-file?speaker_id=${speaker.id}");
-      final Speaker localSpeaker = getLocalSpeakerbyID(speaker.id,speaker.sessionId) ;
+          "http://192.168.1.1:8000/speaker/delete-file?speaker_id=${speaker.id}");
+      final Speaker localSpeaker =
+          getLocalSpeakerbyID(speaker.id, speaker.sessionId);
       localSpeaker.file = "";
       await getSuggestions();
     } catch (e) {
@@ -271,23 +249,14 @@ class ConferenceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteSession(int sessionID) async {
+  Future<void> deleteSession(Session session) async {
     try {
-      Response response = await _dio.delete("$_sessionEndpoint$sessionID");
+      Response response = await _dio.delete("$_sessionEndpoint${session.id}");
       if (response.statusCode! >= 200) {
-        // removeSessionLocally(sessionID);
-        int i = 0;
-        for (var hall in _halls) {
-          for (i; i < hall.sessions.length; i++) {
-            if (hall.sessions[i].id == sessionID) {
-              hall.sessions.remove(hall.sessions[i]);
-              break;
-            }
-          }
-        }
+        final int hallIdx = getHallIdx(session.hallId);
+        _halls[hallIdx].sessions.removeWhere((sess) => sess.id == session.id);
+        notifyListeners();
       }
-      notifyListeners();
-      await getSuggestions();
     } catch (e) {
       rethrow;
     }

@@ -77,11 +77,13 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
               const SnackBar(content: Text("The file has been uploaded!")));
         }
       } else {
+        isUploaded = false;
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("No file was picked!")));
       }
     } catch (e) {
       setState(() {
+        isUploaded = false;
         _isloading = false;
       });
       rethrow;
@@ -311,10 +313,16 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                                             onPressed: () async {
                                               await uploadFile(
                                                   speakers[idx].id);
-                                              setState(() {
-                                                speakers[idx].file =
-                                                    "there is a file";
-                                              });
+                                              if (isUploaded == true) {
+                                                setState(() {
+                                                  speakers[idx].file =
+                                                      "there is a file";
+                                                });
+                                              } else {
+                                                setState(() {
+                                                  speakers[idx].file = "";
+                                                });
+                                              }
                                             },
                                             child: const Text("Upload File",
                                                 style: TextStyle(fontSize: 20)),
@@ -391,7 +399,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                                     splashColor: Colors.transparent,
                                     hoverColor: Colors.transparent,
                                     onPressed: () async {
-                                      
                                       await deleteSpeaker(speakers[idx]);
                                     },
                                     icon: const Icon(
@@ -415,13 +422,17 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
             await Provider.of<ConferenceProvider>(context, listen: false)
                 .downloadSessionFiles(session.id);
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("All sesion file has been downloaded")));
+                content: Text("All session files have been downloaded")));
           } catch (e) {
-             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Erorr on downloading")));
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Erorr on downloading")));
             rethrow;
           }
         },
-        child: const Icon(Icons.download),
+        child: const Icon(
+          Icons.download,
+          color: Colors.white,
+        ),
       ),
     );
   }

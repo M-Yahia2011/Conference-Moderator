@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './/providers/conf_provider.dart';
 import './screens/screens.dart';
-
+/*
+Developed by Mohamed Yahia at 28/12/2021
+m.yahia.eid2011@gmail.com 
+*/
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -17,12 +20,6 @@ class MyApp extends StatelessWidget {
         title: 'Conference Moderator',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
-        // ThemeData(
-        //     primarySwatch: Colors.red,
-        //     textTheme: const TextTheme(
-        //       bodyText2: TextStyle(fontSize: 25),
-        //       bodyText1: TextStyle(fontSize: 30),
-        //     )),
         home: const HomePage(),
         routes: {
           HomePage.routeName: (ctx)=> const HomePage(),

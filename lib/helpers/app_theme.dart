@@ -17,5 +17,6 @@ class AppTheme {
       iconTheme: const IconThemeData(size: 30),
       scaffoldBackgroundColor: MyColors.colors[300],
       elevatedButtonTheme: ElevatedButtonThemeData(style: ElevatedButton.styleFrom(primary: MyColors.colors[200])),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(backgroundColor: Colors.red,),
       appBarTheme: AppBarTheme(color: MyColors.colors[100]));
 }

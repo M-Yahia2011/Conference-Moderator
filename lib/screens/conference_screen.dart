@@ -73,7 +73,7 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
                 children: [
                   Container(
                     height: 60,
-                    width: 500,
+                    width: 600,
                     padding: const EdgeInsets.all(4),
                     margin: const EdgeInsets.symmetric(vertical: 15),
                     decoration: BoxDecoration(
@@ -82,7 +82,7 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
                     child: TextField(
                       controller: _textEditingController,
                       decoration: const InputDecoration(
-                          // contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8),
                           labelText: "Hall Name",
                           labelStyle: TextStyle(color: Colors.black),
                           border: InputBorder.none),
@@ -184,6 +184,7 @@ class HallCard extends StatelessWidget {
               splashColor: Colors.transparent,
               hoverColor: Colors.transparent,
               onPressed: () async {
+                
                 Provider.of<ConferenceProvider>(context, listen: false)
                     .deleteHall(hall.id);
               },

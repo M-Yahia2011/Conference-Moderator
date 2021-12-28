@@ -1,3 +1,4 @@
+import 'package:conf_moderator/models/session.dart';
 import 'package:flutter/material.dart';
 import '/models/hall.dart';
 import '/providers/conf_provider.dart';
@@ -5,7 +6,6 @@ import '/screens/session_details_screen.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart' as intl;
-
 
 // import 'add_session_screen.dart';
 
@@ -52,13 +52,13 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
     }
   }
 
-  Future<void> deleteSession(int sessionID) async {
+  Future<void> deleteSession(Session session) async {
     try {
       setState(() {
         _isLoading = true;
       });
       await Provider.of<ConferenceProvider>(context, listen: false)
-          .deleteSession(sessionID);
+          .deleteSession(session);
       setState(() {
         _isLoading = false;
       });
@@ -216,7 +216,8 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                                 splashColor: Colors.transparent,
                                 hoverColor: Colors.transparent,
                                 onPressed: () async {
-                                  await deleteSession(hall.sessions[idx].id);
+                                  await deleteSession(hall.sessions[idx]);
+                                 
                                 },
                                 icon: const Icon(
                                   Icons.delete,
@@ -231,20 +232,24 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
               ],
             )),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          try {
+            await Provider.of<ConferenceProvider>(context, listen: false)
+                .downloadHallFiles(hall.id);
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text("All hall files have been downloaded")));
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Erorr on downloading")));
+            rethrow;
+          }
+        },
+        child: const Icon(
+          Icons.download,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }
-
-// class SessionCard extends StatelessWidget {
-//   const SessionCard({
-//     Key? key,
-//     required this.session,
-//   }) : super(key: key);
-
-//   final Session session;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return 
-//   }
-// }
