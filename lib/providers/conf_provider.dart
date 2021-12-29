@@ -1,5 +1,7 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '/models/speaker_suggestion.dart';
 import '/models/hall.dart';
 import '/models/session.dart';
@@ -12,25 +14,30 @@ class ConferenceProvider with ChangeNotifier {
   // ignore: prefer_final_fields
   List<Hall> _halls = [];
   List<SpeakerSuggestion> _speakersSuggesions = [];
+
   final Dio _dio = Dio();
 
-   String _mainEndPoint = "";
-   String _hallsEndpoint = "";
-   String _sessionEndpoint = "";
-   String _speakerEndpoint = "";
-   String _getsuggestionsEndpoint = "";
+  String _mainEndPoint = "";
+  String _hallsEndpoint = "";
+  String _sessionEndpoint = "";
+  String _speakerEndpoint = "";
+  String _getsuggestionsEndpoint = "";
 
-  void setIP(String ipInput, String portInput) {
+  void setIP(String ipInput, String portInput) async {
     String ip = ipInput.trim();
     String port = portInput.trim();
     _mainEndPoint = "http://" + ip + ":" + port;
-      _hallsEndpoint = "$_mainEndPoint/halls/";
-   _sessionEndpoint = "$_mainEndPoint/sessions/";
-   _speakerEndpoint = "$_mainEndPoint/speakers/";
-   _getsuggestionsEndpoint =
-      "$_mainEndPoint/speakers-search/";
+    updateEndpoints();
     notifyListeners();
-   
+    final preferences = await SharedPreferences.getInstance();
+    preferences.setString("mainEndpoint", _mainEndPoint);
+  }
+
+  void updateEndpoints() {
+    _hallsEndpoint = "$_mainEndPoint/halls/";
+    _sessionEndpoint = "$_mainEndPoint/sessions/";
+    _speakerEndpoint = "$_mainEndPoint/speakers/";
+    _getsuggestionsEndpoint = "$_mainEndPoint/speakers-search/";
   }
 
   bool isEndpointSetted() {
@@ -39,6 +46,30 @@ class ConferenceProvider with ChangeNotifier {
     } else {
       return true;
     }
+  }
+
+  Future<bool> checkStoredMainpoint() async {
+    final preferences = await SharedPreferences.getInstance();
+    final String? stored = preferences.get("mainEndpoint") as String?;
+    if (stored == null) {
+      return false;
+    }
+    if (stored.isEmpty) {
+      return false;
+    } else {
+      _mainEndPoint = stored;
+      updateEndpoints();
+      notifyListeners();
+      return true;
+    }
+  }
+
+  Future<void> deleteSharedPreferences() async {
+    final preferences = await SharedPreferences.getInstance();
+    preferences.setString("mainEndpoint", "");
+    _mainEndPoint = "";
+    updateEndpoints();
+    notifyListeners();
   }
 
   List<Hall> get allHalls {
@@ -210,8 +241,7 @@ class ConferenceProvider with ChangeNotifier {
 
   Future<void> downloadFile(int speakerID) async {
     try {
-      String url =
-          "$_mainEndPoint/speaker/downlod-file/?spaker_id=$speakerID";
+      String url = "$_mainEndPoint/speaker/downlod-file/?spaker_id=$speakerID";
       html.AnchorElement anchorElement = html.AnchorElement(href: url);
       anchorElement.download = url;
       anchorElement.click();
