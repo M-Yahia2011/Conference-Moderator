@@ -6,7 +6,7 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class ConferenceScreen extends StatefulWidget {
-  static const routeName = "/add_conf";
+  static const routeName = "/Conference_halls";
 
   const ConferenceScreen({Key? key}) : super(key: key);
 
@@ -165,7 +165,7 @@ class HallCard extends StatelessWidget {
         context: ctx,
         builder: (ctx) {
           return AlertDialog(
-            
+
             title: const Text('Attention'),
             actions: [
               TextButton(

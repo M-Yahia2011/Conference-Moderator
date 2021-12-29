@@ -435,10 +435,9 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                                     onPressed: () async {
                                       bool deleteAction =
                                           await deleteAlert(context);
-                                          if (deleteAction == true) {
-                                            
-                                      await deleteSpeaker(speakers[idx]);
-                                          }
+                                      if (deleteAction == true) {
+                                        await deleteSpeaker(speakers[idx]);
+                                      }
                                     },
                                     icon: const Icon(
                                       Icons.delete,

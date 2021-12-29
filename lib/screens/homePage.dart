@@ -102,9 +102,7 @@ class _HomePageState extends State<HomePage> {
                               controller: _textEditingControllerSearch,
                               decoration: InputDecoration(
                                   icon: const Icon(Icons.search),
-                                  // contentPadding: EdgeInsets.symmetric(
-                                  //     horizontal: 15),
-                                  labelText: "Search by speaker's name!",
+                                  labelText: "Search by speaker's name",
                                   labelStyle:
                                       TextStyle(color: Colors.grey[600]),
                                   border: InputBorder.none),
