@@ -1,3 +1,4 @@
+import 'package:conf_moderator/helpers/colors.dart';
 import 'package:conf_moderator/models/hall.dart';
 import 'package:conf_moderator/providers/conf_provider.dart';
 import 'package:conf_moderator/screens/hall_details_screen.dart';
@@ -29,8 +30,6 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
       setState(() {
         _isLoading = false;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Start adding sessions!")));
       });
     } catch (e) {
       setState(() {
@@ -89,10 +88,12 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
                         borderRadius: BorderRadius.circular(15)),
                     child: TextField(
                       controller: _textEditingController,
-                      decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                      style: const TextStyle(fontSize: 16),
+                      decoration:  InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                           labelText: "Hall Name",
-                          labelStyle: TextStyle(color: Colors.black),
+                          labelStyle: TextStyle(color: Colors.grey[700],fontSize: 16,fontWeight: FontWeight.bold),
+
                           border: InputBorder.none),
                     ),
                   ),
@@ -104,9 +105,10 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
                       onPressed: () async {
                         if (_textEditingController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                               SnackBar(
+                                backgroundColor: MyColors.colors[200],
                                   content:
-                                      Text("You must enter a hall name!")));
+                                      const Text("You must enter a hall name!")));
                         } else {
                           Map<String, dynamic> hallInfo = {
                             "name": _textEditingController.text,
@@ -165,7 +167,6 @@ class HallCard extends StatelessWidget {
         context: ctx,
         builder: (ctx) {
           return AlertDialog(
-
             title: const Text('Attention'),
             actions: [
               TextButton(
@@ -202,14 +203,20 @@ class HallCard extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(20),
             onTap: () {
+           
               Navigator.of(context)
                   .pushNamed(HallDetailsScreen.routeName, arguments: hall);
             },
-            child: Center(
-              child: Text(
-                hall.name,
-                style:
-                    const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            child: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Center(
+                child: FittedBox(
+                  child: Text(
+                    hall.name,
+                    style: const TextStyle(
+                        fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
             ),
           ),
@@ -226,7 +233,7 @@ class HallCard extends StatelessWidget {
                 if (deleteAction == true) {
                   await Provider.of<ConferenceProvider>(context, listen: false)
                       .deleteHall(hall.id);
-                } 
+                }
               },
               icon: const Icon(
                 Icons.delete,

@@ -1,4 +1,5 @@
 // ignore: avoid_web_libraries_in_flutter
+import 'dart:async';
 import 'dart:html' as html;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,7 +17,6 @@ class ConferenceProvider with ChangeNotifier {
   List<SpeakerSuggestion> _speakersSuggesions = [];
 
   final Dio _dio = Dio();
-
   String _mainEndPoint = "";
   String _hallsEndpoint = "";
   String _sessionEndpoint = "";
@@ -26,6 +26,7 @@ class ConferenceProvider with ChangeNotifier {
   void setIP(String ipInput, String portInput) async {
     String ip = ipInput.trim();
     String port = portInput.trim();
+    
     _mainEndPoint = "http://" + ip + ":" + port;
     updateEndpoints();
     notifyListeners();
@@ -99,6 +100,25 @@ class ConferenceProvider with ChangeNotifier {
     }
   }
 
+  ///
+  // Future<WebSocketChannel> initiateChannel() async {
+  //   final channel =
+  //       WebSocketChannel.connect(Uri.parse("wss://echo.websocket.org"));
+  //   // _halls = channel.stream.first
+  //   // notifyListeners();
+  //   return channel;
+  // }
+
+  ///
+  ///
+  // Future<void> test() async {
+
+  //   final channel =
+  //       WebSocketChannel.connect(Uri.parse("http://localhost:8000/halls-websocket/"));
+
+  //   print(channel.stream.first);
+  // }
+
   Future<void> getAllHalls() async {
     try {
       final response = await _dio.get(
@@ -114,8 +134,10 @@ class ConferenceProvider with ChangeNotifier {
         }
         _halls = fetchedHalls;
         notifyListeners();
+      
       }
     } catch (e) {
+      
       rethrow;
     }
   }
@@ -317,7 +339,8 @@ class ConferenceProvider with ChangeNotifier {
       Response response = await _dio.delete("$_speakerEndpoint${speaker.id}");
       if (response.statusCode! >= 200) {
         final session = getSessionbyID(speaker.sessionId);
-        session!.speakers.remove(speaker);
+        session!.speakers
+            .removeWhere((currentSpeaker) => currentSpeaker.id == speaker.id);
         notifyListeners();
         await getSuggestions();
       }

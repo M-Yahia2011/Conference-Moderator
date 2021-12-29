@@ -1,3 +1,4 @@
+import 'package:conf_moderator/helpers/colors.dart';
 import 'package:conf_moderator/models/session.dart';
 import 'package:flutter/material.dart';
 import '/models/hall.dart';
@@ -106,174 +107,186 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
       appBar: AppBar(
         title: Text(hall.name),
       ),
-      body: LoadingOverlay(
-        isLoading: _isLoading,
-        color: Colors.transparent,
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  height: 60,
-                  width: 600,
-                  padding: const EdgeInsets.all(4),
-                  margin: const EdgeInsets.symmetric(vertical: 15),
-                  decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(15)),
-                  child: TextField(
-                    controller: _textEditingController,
-                    decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                        labelText: "Session Name",
-                        labelStyle: TextStyle(color: Colors.black),
-                        border: InputBorder.none),
-                  ),
-                ),
-                SizedBox(
-                  width: 300,
-                  height: 40,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final picked = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime(2050));
-                      setState(() {
-                        _pickedDate = picked;
-                      });
-                    },
-                    child: Text(
-                        _pickedDate != null
-                            ? intl.DateFormat.yMMMEd().format(_pickedDate!)
-                            : "Pick a Date",
-                        style: const TextStyle(fontSize: 20)),
-                  ),
-                ),
-                Container(
-                  width: 400,
-                  height: 40,
-                  margin: const EdgeInsets.all(15),
-                  child: ElevatedButton(
-                      onPressed: () async {
-                        // Navigator.of(context)
-                        //     .pushNamed(AddSessionScreen.routeName);
-                        if (_pickedDate == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("You must pick a Date!")));
-                        } else if (_textEditingController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      "You must enter the session Name!")));
-                        } else {
-                          Map<String, dynamic> sessionInfo = {
-                            "name": _textEditingController.text,
-                            "hall_id": hall.id,
-                            "date": intl.DateFormat.yMMMEd()
-                                .format(_pickedDate!)
-                                .toString()
-                          };
-
-                          await addSession(hall.id, sessionInfo);
-                          _textEditingController.clear();
-                        }
-                      },
-                      child: const Text(
-                        "Add a new session",
-                        style: TextStyle(fontSize: 25),
-                      )),
-                ),
-                Expanded(
-                  child: GridView.builder(
-                    // controller: _scrollController,
-                    itemCount: hall.sessions.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 7,
-                      childAspectRatio: 1.5 / 2,
+      body: SafeArea(
+        child: LoadingOverlay(
+          isLoading: _isLoading,
+          color: Colors.transparent,
+          child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 60,
+                    width: 600,
+                    padding: const EdgeInsets.all(4),
+                    margin: const EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(15)),
+                    child: TextField(
+                      controller: _textEditingController,
+                      style: const TextStyle(fontSize: 16),
+                      decoration: InputDecoration(
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 8),
+                          labelText: "Session Name",
+                          labelStyle: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                          border: InputBorder.none),
                     ),
-                    itemBuilder: (context, idx) {
-                      return Stack(
-                        children: [
-                          SizedBox(
-                            height: 600,
-                            width: 300,
-                            child: Card(
-                              margin: const EdgeInsets.all(15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(20),
-                                onTap: () {
-                                  Navigator.of(context).pushNamed(
-                                      SessionDetailsScreen.routeName,
-                                      arguments: hall.sessions[idx]);
-                                },
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    FittedBox(
-                                      child: Text(
-                                        hall.sessions[idx].name,
-                                        style: const TextStyle(fontSize: 22),
-                                      ),
+                  ),
+                  SizedBox(
+                    width: 300,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final picked = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime(2050));
+                        setState(() {
+                          _pickedDate = picked;
+                        });
+                      },
+                      child: Text(
+                          _pickedDate != null
+                              ? intl.DateFormat.yMMMEd().format(_pickedDate!)
+                              : "Pick a Date",
+                          style: const TextStyle(fontSize: 20)),
+                    ),
+                  ),
+                  Container(
+                    width: 400,
+                    height: 40,
+                    margin: const EdgeInsets.all(15),
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          if (_pickedDate == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                backgroundColor: MyColors.colors[200],
+                                content: const Text("You must pick a Date!")));
+                          } else if (_textEditingController.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                backgroundColor: MyColors.colors[200],
+                                content: const Text(
+                                    "You must enter the session Name!")));
+                          } else {
+                            Map<String, dynamic> sessionInfo = {
+                              "name": _textEditingController.text,
+                              "hall_id": hall.id,
+                              "date": intl.DateFormat.yMMMEd()
+                                  .format(_pickedDate!)
+                                  .toString()
+                            };
+
+                            await addSession(hall.id, sessionInfo);
+                            _textEditingController.clear();
+                          }
+                        },
+                        child: const Text(
+                          "Add a new session",
+                          style: TextStyle(fontSize: 25),
+                        )),
+                  ),
+                  Expanded(
+                    child: GridView.builder(
+                      // controller: _scrollController,
+                      itemCount: hall.sessions.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 7,
+                        childAspectRatio: 1.5 / 2,
+                      ),
+                      itemBuilder: (context, idx) {
+                        return Stack(
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: Card(
+                                margin: const EdgeInsets.all(15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(20),
+                                  onTap: () {
+                                    Navigator.of(context).pushNamed(
+                                        SessionDetailsScreen.routeName,
+                                        arguments: hall.sessions[idx]);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          hall.sessions[idx].name,
+                                          style: const TextStyle(
+                                              fontSize: 22,
+                                              overflow: TextOverflow.ellipsis,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        FittedBox(
+                                          child: Text(
+                                            hall.sessions[idx].date,
+                                            style: const TextStyle(
+                                                fontSize: 20,
+                                                overflow:
+                                                    TextOverflow.ellipsis),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    FittedBox(
-                                      child: Text(
-                                        hall.sessions[idx].date,
-                                        style: const TextStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                            right: 20,
-                            top: 20,
-                            child: IconButton(
-                                highlightColor: Colors.transparent,
-                                splashColor: Colors.transparent,
-                                hoverColor: Colors.transparent,
-                                onPressed: () async {
-                                  bool deleteAction =
-                                      await deleteAlert(context);
-                                  if (deleteAction == true) {
-                                    await deleteSession(hall.sessions[idx]);
-                                  }
-                                },
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                )),
-                          ),
-                        ],
-                      );
-                    },
+                            Positioned(
+                              right: 20,
+                              top: 20,
+                              child: IconButton(
+                                  highlightColor: Colors.transparent,
+                                  splashColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  onPressed: () async {
+                                    bool deleteAction =
+                                        await deleteAlert(context);
+                                    if (deleteAction == true) {
+                                      await deleteSession(hall.sessions[idx]);
+                                    }
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  )),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
-            )),
+                ],
+              )),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           try {
             await Provider.of<ConferenceProvider>(context, listen: false)
                 .downloadHallFiles(hall.id);
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("All hall files have been downloaded")));
           } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Erorr on downloading")));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                backgroundColor: MyColors.colors[200],
+                content: const Text("Erorr on downloading")));
             rethrow;
           }
         },

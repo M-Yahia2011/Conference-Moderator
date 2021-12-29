@@ -1,3 +1,5 @@
+import 'package:conf_moderator/helpers/colors.dart';
+
 import '/providers/conf_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -56,7 +58,7 @@ class _SetIpScreenState extends State<SetIPScreen> {
                           borderRadius: BorderRadius.circular(15)),
                       child: TextField(
                         controller: _textEditingControllerIP,
-                         style: const TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                         decoration: const InputDecoration(
                             contentPadding: EdgeInsets.symmetric(horizontal: 8),
                             labelText: "Set the IP ex. 192.168.1.1",
@@ -81,7 +83,6 @@ class _SetIpScreenState extends State<SetIPScreen> {
                       decoration: const InputDecoration(
                           contentPadding: EdgeInsets.symmetric(horizontal: 8),
                           labelText: "Port",
-                          
                           labelStyle:
                               TextStyle(fontSize: 14, color: Colors.black),
                           border: InputBorder.none),
@@ -95,9 +96,17 @@ class _SetIpScreenState extends State<SetIPScreen> {
               width: 250,
               child: ElevatedButton(
                 onPressed: () {
+                  if (_textEditingControllerIP.text.isEmpty ||
+                      _textEditingControllerPort.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: MyColors.colors[200],
+                      content: const Text("You must enter the IP and the Port!")));
+                  }else{
+
                   Provider.of<ConferenceProvider>(context, listen: false).setIP(
                       _textEditingControllerIP.text,
                       _textEditingControllerPort.text);
+                  }
 
                   _textEditingControllerIP.clear();
                   _textEditingControllerPort.clear();

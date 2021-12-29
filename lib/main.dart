@@ -1,12 +1,16 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:url_strategy/url_strategy.dart';
 import '/helpers/app_theme.dart';
 import '/screens/homePage.dart';
 import '/screens/set_IP_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '/providers/conf_provider.dart';
 import './screens/screens.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  setPathUrlStrategy();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

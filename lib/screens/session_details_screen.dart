@@ -1,3 +1,4 @@
+import 'package:conf_moderator/helpers/colors.dart';
 import 'package:conf_moderator/models/session.dart';
 import 'package:conf_moderator/models/speaker.dart';
 import 'package:conf_moderator/providers/conf_provider.dart';
@@ -73,13 +74,15 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
           _isloading = false;
         });
         if (isUploaded == true) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("The file has been uploaded!")));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: MyColors.colors[100],
+              content: const Text("The file has been successfully uploaded!")));
         }
       } else {
         isUploaded = false;
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("No file was picked!")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: MyColors.colors[200],
+            content: const Text("No file was picked!")));
       }
     } catch (e) {
       setState(() {
@@ -100,14 +103,25 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
       setState(() {
         _isloading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("The speaker was successfully removed")));
     } catch (e) {
       setState(() {
         _isloading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Error: Couldn't be removed")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: MyColors.colors[200],
+          content: const Text("Error: The speaker Couldn't be removed")));
+      rethrow;
+    }
+  }
+
+  Future<void> deleteFile(Speaker speaker) async {
+    try {
+      await Provider.of<ConferenceProvider>(context, listen: false)
+          .deleteFile(speaker);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: MyColors.colors[200],
+          content: const Text("Error: The file Couldn't be removed")));
       rethrow;
     }
   }
@@ -161,7 +175,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                 children: [
                   Container(
                     height: 60,
-                    width: 300,
+                    width: 400,
                     padding: const EdgeInsets.all(4),
                     margin: const EdgeInsets.symmetric(vertical: 15),
                     decoration: BoxDecoration(
@@ -169,10 +183,11 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                         borderRadius: BorderRadius.circular(15)),
                     child: TextField(
                       controller: _textEditingControllerName,
-                      decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                      style: const TextStyle(fontSize: 16),
+                      decoration:  InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                           labelText: "Speaker's Name",
-                          labelStyle: TextStyle(color: Colors.black),
+                          labelStyle: TextStyle(color: Colors.grey[700],fontSize: 16,fontWeight: FontWeight.bold),
                           border: InputBorder.none),
                     ),
                   ),
@@ -186,10 +201,11 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                         borderRadius: BorderRadius.circular(15)),
                     child: TextField(
                       controller: _textEditingControllerSubject,
-                      decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                      style: const TextStyle(fontSize: 16),
+                      decoration:  InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                           labelText: "Subject",
-                          labelStyle: TextStyle(color: Colors.black),
+                          labelStyle: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold),
                           border: InputBorder.none),
                     ),
                   ),
@@ -201,7 +217,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                     children: [
                       Row(
                         children: [
-                          const Text("From"),
+                          const Text("From:",style: TextStyle(fontWeight: FontWeight.bold),),
                           const SizedBox(
                             width: 10,
                           ),
@@ -225,7 +241,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                       ),
                       Row(
                         children: [
-                          const Text("To"),
+                          const Text("To:",style: TextStyle(fontWeight: FontWeight.bold),),
                           const SizedBox(
                             width: 10,
                           ),
@@ -257,20 +273,18 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                       height: 40,
                       child: ElevatedButton(
                           onPressed: () async {
-                            // Navigator.of(context).pushNamed(
-                            //     AddSpeakerScreen.routeName,
-                            //     arguments: "1");
                             if (_textEditingControllerName.text.isEmpty ||
                                 _textEditingControllerSubject.text.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "You must enter the speaker's name and subject!")));
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  backgroundColor: MyColors.colors[200],
+                                  content: const Text(
+                                      "You must enter the speaker's name and subject!")));
                             } else if (startTime == null || endTime == null) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                          Text("You must pick the time!")));
+                                  SnackBar(
+                                      backgroundColor: MyColors.colors[200],
+                                      content: const Text(
+                                          "You must pick the time!")));
                             } else {
                               Map<String, dynamic> speakerInfo = {
                                 "name": _textEditingControllerName.text,
@@ -311,7 +325,12 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
                                     children: [
-                                      Text(speakers[idx].name),
+                                      Text(
+                                        speakers[idx].name,
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                       const SizedBox(
                                         height: 10,
                                       ),
@@ -394,16 +413,11 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                                               child: ElevatedButton(
                                                 onPressed: () async {
                                                   try {
-                                                    bool delteAction =
+                                                    bool deleteAction =
                                                         await deleteAlert(
                                                             context);
-                                                    if (delteAction == true) {
-                                                      await Provider.of<
-                                                                  ConferenceProvider>(
-                                                              context,
-                                                              listen: false)
-                                                          .deleteFile(
-                                                              speakers[idx]);
+                                                    if (deleteAction == true) {
+                                                      deleteFile(speakers[idx]);
                                                       setState(() {
                                                         speakers[idx].file = "";
                                                       });
@@ -459,11 +473,10 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
           try {
             await Provider.of<ConferenceProvider>(context, listen: false)
                 .downloadSessionFiles(session.id);
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("All session files have been downloaded")));
           } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Erorr on downloading")));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                backgroundColor: MyColors.colors[200],
+                content: const Text("Erorr while downloading!")));
             rethrow;
           }
         },

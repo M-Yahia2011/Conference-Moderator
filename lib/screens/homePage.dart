@@ -1,10 +1,10 @@
+import 'package:conf_moderator/helpers/colors.dart';
 import 'package:flutter/material.dart';
 import '/models/speaker_suggestion.dart';
 import '/models/session.dart';
 import '/screens/screens.dart';
 import '/providers/conf_provider.dart';
 import 'package:flutter_typeahead2/flutter_typeahead2.dart';
-
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,12 +21,17 @@ class _HomePageState extends State<HomePage> {
     try {
       await Provider.of<ConferenceProvider>(context, listen: false)
           .getAllHalls();
+
       await Provider.of<ConferenceProvider>(context, listen: false)
           .getSuggestions();
+
+     
     } catch (e) {
       
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Error: Check the server!")));
+           SnackBar(
+            backgroundColor: MyColors.colors[200],
+            content: const Text("Error: Check the server!")));
       rethrow;
     }
   }
@@ -97,14 +102,13 @@ class _HomePageState extends State<HomePage> {
                               borderRadius: BorderRadius.circular(15)),
                           child: TypeAheadField<SpeakerSuggestion>(
                             textFieldConfiguration: TextFieldConfiguration(
-                              // focusNode: _focusNode,
-                              // autofocus: true,
                               controller: _textEditingControllerSearch,
+                              style: const TextStyle(fontSize: 16),
                               decoration: InputDecoration(
-                                  icon: const Icon(Icons.search),
+                                  icon:  Icon(Icons.search,color: Colors.grey[700],),
                                   labelText: "Search by speaker's name",
                                   labelStyle:
-                                      TextStyle(color: Colors.grey[600]),
+                                      TextStyle(color: Colors.grey[700],fontSize: 16,fontWeight: FontWeight.bold),
                                   border: InputBorder.none),
                             ),
                             onSuggestionSelected: (suggestion) {
@@ -124,11 +128,10 @@ class _HomePageState extends State<HomePage> {
                               child: Text(
                                 "This speaker Doesn't exist",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 18),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                             itemBuilder: (context, suggestedItem) {
-                            
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 8),
