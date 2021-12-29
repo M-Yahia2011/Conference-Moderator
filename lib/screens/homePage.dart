@@ -1,5 +1,5 @@
-import 'package:conf_moderator/models/speaker_suggestion.dart';
 import 'package:flutter/material.dart';
+import '/models/speaker_suggestion.dart';
 import '/models/session.dart';
 import '/screens/screens.dart';
 import '/providers/conf_provider.dart';

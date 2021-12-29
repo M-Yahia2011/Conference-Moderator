@@ -41,6 +41,7 @@ dependencies:
   file_picker: ^4.3.0
   http: ^0.13.4
   flutter_typeahead2: ^3.2.1
+  shared_preferences: ^2.0.11
  
 
  

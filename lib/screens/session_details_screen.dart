@@ -112,6 +112,35 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
     }
   }
 
+  Future<bool> deleteAlert(BuildContext ctx) async {
+    return await showDialog(
+        context: ctx,
+        builder: (ctx) {
+          return AlertDialog(
+            title: const Text('Attention'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop(true);
+                  },
+                  child: const Text(
+                    'Yes',
+                    style: TextStyle(fontSize: 15),
+                  )),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop(false);
+                  },
+                  child: const Text(
+                    'No',
+                    style: TextStyle(fontSize: 15),
+                  ))
+            ],
+            content: const Text("Are you sure you want to delete?"),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final Session session =
@@ -365,15 +394,20 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                                               child: ElevatedButton(
                                                 onPressed: () async {
                                                   try {
-                                                    await Provider.of<
-                                                                ConferenceProvider>(
-                                                            context,
-                                                            listen: false)
-                                                        .deleteFile(
-                                                            speakers[idx]);
-                                                    setState(() {
-                                                      speakers[idx].file = "";
-                                                    });
+                                                    bool delteAction =
+                                                        await deleteAlert(
+                                                            context);
+                                                    if (delteAction == true) {
+                                                      await Provider.of<
+                                                                  ConferenceProvider>(
+                                                              context,
+                                                              listen: false)
+                                                          .deleteFile(
+                                                              speakers[idx]);
+                                                      setState(() {
+                                                        speakers[idx].file = "";
+                                                      });
+                                                    }
                                                   } catch (e) {
                                                     rethrow;
                                                   }
@@ -399,7 +433,12 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                                     splashColor: Colors.transparent,
                                     hoverColor: Colors.transparent,
                                     onPressed: () async {
+                                      bool deleteAction =
+                                          await deleteAlert(context);
+                                          if (deleteAction == true) {
+                                            
                                       await deleteSpeaker(speakers[idx]);
+                                          }
                                     },
                                     icon: const Icon(
                                       Icons.delete,

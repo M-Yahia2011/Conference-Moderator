@@ -70,6 +70,35 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
     }
   }
 
+  Future<bool> deleteAlert(BuildContext ctx) async {
+    return await showDialog(
+        context: ctx,
+        builder: (ctx) {
+          return AlertDialog(
+            title: const Text('Attention'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop(true);
+                  },
+                  child: const Text(
+                    'Yes',
+                    style: TextStyle(fontSize: 15),
+                  )),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop(false);
+                  },
+                  child: const Text(
+                    'No',
+                    style: TextStyle(fontSize: 15),
+                  ))
+            ],
+            content: const Text("Are you sure you want to delete?"),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final Hall hall = ModalRoute.of(context)?.settings.arguments as Hall;
@@ -216,8 +245,11 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                                 splashColor: Colors.transparent,
                                 hoverColor: Colors.transparent,
                                 onPressed: () async {
-                                  await deleteSession(hall.sessions[idx]);
-                                 
+                                  bool deleteAction =
+                                      await deleteAlert(context);
+                                  if (deleteAction == true) {
+                                    await deleteSession(hall.sessions[idx]);
+                                  }
                                 },
                                 icon: const Icon(
                                   Icons.delete,

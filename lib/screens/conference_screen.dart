@@ -43,7 +43,6 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
   @override
   void initState() {
     super.initState();
-    // _future = fetchAllHalls();
     _scrollController = ScrollController();
     _textEditingController = TextEditingController();
   }
@@ -60,6 +59,15 @@ class _AddConferenceScreenState extends State<ConferenceScreen> {
       appBar: AppBar(
         title: const Text("Conference Manager"),
         centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () async {
+                await Provider.of<ConferenceProvider>(context, listen: false)
+                    .deleteSharedPreferences();
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(Icons.exit_to_app_rounded))
+        ],
       ),
       backgroundColor: Colors.grey[100],
       body: SafeArea(
@@ -152,6 +160,36 @@ class HallCard extends StatelessWidget {
     required this.hall,
   }) : super(key: key);
 
+  Future<bool> deleteAlert(BuildContext ctx) async {
+    return await showDialog(
+        context: ctx,
+        builder: (ctx) {
+          return AlertDialog(
+            
+            title: const Text('Attention'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop(true);
+                  },
+                  child: const Text(
+                    'Yes',
+                    style: TextStyle(fontSize: 15),
+                  )),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop(false);
+                  },
+                  child: const Text(
+                    'No',
+                    style: TextStyle(fontSize: 15),
+                  ))
+            ],
+            content: const Text("Are you sure you want to delete?"),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -184,9 +222,11 @@ class HallCard extends StatelessWidget {
               splashColor: Colors.transparent,
               hoverColor: Colors.transparent,
               onPressed: () async {
-                
-                Provider.of<ConferenceProvider>(context, listen: false)
-                    .deleteHall(hall.id);
+                bool deleteAction = await deleteAlert(context);
+                if (deleteAction == true) {
+                  await Provider.of<ConferenceProvider>(context, listen: false)
+                      .deleteHall(hall.id);
+                } 
               },
               icon: const Icon(
                 Icons.delete,
