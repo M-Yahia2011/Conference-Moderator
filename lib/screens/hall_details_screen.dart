@@ -1,14 +1,12 @@
-import 'package:conf_moderator/helpers/colors.dart';
-import 'package:conf_moderator/models/session.dart';
 import 'package:flutter/material.dart';
+import '/helpers/colors.dart';
+import '/models/session.dart';
 import '/models/hall.dart';
 import '/providers/conf_provider.dart';
 import '/screens/session_details_screen.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart' as intl;
-
-// import 'add_session_screen.dart';
 
 class HallDetailsScreen extends StatefulWidget {
   static const routeName = "/hallDetailsScreen";
@@ -20,6 +18,7 @@ class HallDetailsScreen extends StatefulWidget {
 }
 
 class _HallDetailsScreenState extends State<HallDetailsScreen> {
+  late ScrollController _scrollController;
   late TextEditingController _textEditingController;
   DateTime? _pickedDate;
   bool _isLoading = false;
@@ -27,11 +26,13 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
   void initState() {
     super.initState();
     _textEditingController = TextEditingController();
+    _scrollController = ScrollController();
   }
 
   @override
   void dispose() {
     _textEditingController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -111,8 +112,9 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
         child: LoadingOverlay(
           isLoading: _isLoading,
           color: Colors.transparent,
-          child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50),
+          child: Scrollbar(
+            isAlwaysShown: true,
+            child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -166,23 +168,26 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                     child: ElevatedButton(
                         onPressed: () async {
                           if (_pickedDate == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                backgroundColor: MyColors.colors[200],
-                                content: const Text("You must pick a Date!")));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    backgroundColor: MyColors.colors[200],
+                                    content:
+                                        const Text("You must pick a Date!")));
                           } else if (_textEditingController.text.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                backgroundColor: MyColors.colors[200],
-                                content: const Text(
-                                    "You must enter the session Name!")));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    backgroundColor: MyColors.colors[200],
+                                    content: const Text(
+                                        "You must enter the session Name!")));
                           } else {
                             Map<String, dynamic> sessionInfo = {
-                              "name": _textEditingController.text,
+                              "name": _textEditingController.text.trim(),
                               "hall_id": hall.id,
                               "date": intl.DateFormat.yMMMEd()
                                   .format(_pickedDate!)
                                   .toString()
                             };
-
+          
                             await addSession(hall.id, sessionInfo);
                             _textEditingController.clear();
                           }
@@ -192,9 +197,19 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                           style: TextStyle(fontSize: 25),
                         )),
                   ),
-                  Expanded(
+                  if(hall.sessions.isEmpty)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(50.0),
+                      child: Text("No sessions were added",style: TextStyle(fontSize: 25),),
+                    ),
+                  )
+                  ,
+                  if(hall.sessions.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(50, 0, 50, 30),
                     child: GridView.builder(
-                      // controller: _scrollController,
+                      controller: _scrollController,
                       itemCount: hall.sessions.length,
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
@@ -232,7 +247,8 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                                           hall.sessions[idx].name,
                                           style: const TextStyle(
                                               fontSize: 22,
-                                              overflow: TextOverflow.ellipsis,
+                                              overflow:
+                                                  TextOverflow.ellipsis,
                                               fontWeight: FontWeight.bold),
                                         ),
                                         FittedBox(
@@ -261,7 +277,8 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                                     bool deleteAction =
                                         await deleteAlert(context);
                                     if (deleteAction == true) {
-                                      await deleteSession(hall.sessions[idx]);
+                                      await deleteSession(
+                                          hall.sessions[idx]);
                                     }
                                   },
                                   icon: const Icon(
@@ -275,7 +292,9 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                     ),
                   ),
                 ],
-              )),
+              ),
+            ),
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
