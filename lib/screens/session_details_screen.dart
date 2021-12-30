@@ -195,7 +195,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                     height: 60,
                     width: 600,
                     padding: const EdgeInsets.all(4),
-                    margin: const EdgeInsets.symmetric(vertical: 15),
+                    margin: const EdgeInsets.only(bottom: 15),
                     decoration: BoxDecoration(
                         color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(15)),
@@ -321,6 +321,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                           return Stack(
                             children: [
                               Card(
+                                margin: const EdgeInsets.fromLTRB(0, 15, 0, 20),
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
