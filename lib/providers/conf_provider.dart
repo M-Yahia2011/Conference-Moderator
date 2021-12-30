@@ -22,11 +22,11 @@ class ConferenceProvider with ChangeNotifier {
   String _sessionEndpoint = "";
   String _speakerEndpoint = "";
   String _getsuggestionsEndpoint = "";
-
+  bool isStoredEndpointChecked = false;
   void setIP(String ipInput, String portInput) async {
     String ip = ipInput.trim();
     String port = portInput.trim();
-    
+
     _mainEndPoint = "http://" + ip + ":" + port;
     updateEndpoints();
     notifyListeners();
@@ -134,10 +134,8 @@ class ConferenceProvider with ChangeNotifier {
         }
         _halls = fetchedHalls;
         notifyListeners();
-      
       }
     } catch (e) {
-      
       rethrow;
     }
   }

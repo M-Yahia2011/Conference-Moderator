@@ -168,8 +168,8 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
         child: LoadingOverlay(
           isLoading: _isloading,
           color: Colors.transparent,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 50),
+          child: Scrollbar(
+            isAlwaysShown: true,
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -184,10 +184,14 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                     child: TextField(
                       controller: _textEditingControllerName,
                       style: const TextStyle(fontSize: 16),
-                      decoration:  InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: InputDecoration(
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 8),
                           labelText: "Speaker's Name",
-                          labelStyle: TextStyle(color: Colors.grey[700],fontSize: 16,fontWeight: FontWeight.bold),
+                          labelStyle: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
                           border: InputBorder.none),
                     ),
                   ),
@@ -202,22 +206,25 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                     child: TextField(
                       controller: _textEditingControllerSubject,
                       style: const TextStyle(fontSize: 16),
-                      decoration:  InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: InputDecoration(
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 8),
                           labelText: "Subject",
-                          labelStyle: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold),
+                          labelStyle: TextStyle(
+                              color: Colors.grey[700],
+                              fontWeight: FontWeight.bold),
                           border: InputBorder.none),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 15,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Row(
                         children: [
-                          const Text("From:",style: TextStyle(fontWeight: FontWeight.bold),),
+                          const Text(
+                            "From:",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           const SizedBox(
                             width: 10,
                           ),
@@ -233,7 +240,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                             child: startTime != null
                                 ? Text(startTime!.format(context))
                                 : const Text(
-                                    "Time",
+                                    "Select",
                                     style: TextStyle(fontSize: 20),
                                   ),
                           ),
@@ -241,7 +248,10 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                       ),
                       Row(
                         children: [
-                          const Text("To:",style: TextStyle(fontWeight: FontWeight.bold),),
+                          const Text(
+                            "To:",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           const SizedBox(
                             width: 10,
                           ),
@@ -257,7 +267,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                             child: endTime != null
                                 ? Text(endTime!.format(context))
                                 : const Text(
-                                    "Time",
+                                    "Select",
                                     style: TextStyle(fontSize: 20),
                                   ),
                           ),
@@ -287,8 +297,8 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                                           "You must pick the time!")));
                             } else {
                               Map<String, dynamic> speakerInfo = {
-                                "name": _textEditingControllerName.text,
-                                "subject": _textEditingControllerSubject.text,
+                                "name": _textEditingControllerName.text.trim(),
+                                "subject": _textEditingControllerSubject.text.trim(),
                                 "start_time": startTime!.format(context),
                                 "end_time": endTime!.format(context),
                                 "file": "",
@@ -308,161 +318,182 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                   const Divider(
                     height: 15,
                   ),
-                  ScrollConfiguration(
-                    // height: MediaQuery.of(context).size.height * 0.7,
-                    behavior: ScrollConfiguration.of(context)
-                        .copyWith(scrollbars: false),
-                    child: ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: session.speakers.length,
-                        itemBuilder: (context, idx) {
-                          final speakers = session.speakers;
-                          return Stack(
-                            children: [
-                              Card(
-                                margin: const EdgeInsets.fromLTRB(0, 15, 0, 20),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        speakers[idx].name,
-                                        style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Text(speakers[idx].subject),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 400),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Text(
-                                                "From: ${speakers[idx].startTime}"),
-                                            Text(
-                                                "To: ${speakers[idx].endTime}"),
-                                          ],
+                  if (session.speakers.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.all(50.0),
+                      child: Text(
+                        "No Speakers were added",
+                        style: TextStyle(fontSize: 25),
+                      ),
+                    ),
+                  if (session.speakers.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(50, 0, 50, 30),
+                      child: ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: session.speakers.length,
+                          itemBuilder: (context, idx) {
+                            final speakers = session.speakers;
+                            return Stack(
+                              children: [
+                                Card(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  margin:
+                                      const EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(15.0),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          speakers[idx].name,
+                                          style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
                                         ),
-                                      ),
-                                      const SizedBox(height: 15),
-                                      if (speakers[idx].file.isEmpty)
-                                        SizedBox(
-                                          height: 40,
-                                          width: 500,
-                                          child: ElevatedButton(
-                                            onPressed: () async {
-                                              await uploadFile(
-                                                  speakers[idx].id);
-                                              if (isUploaded == true) {
-                                                setState(() {
-                                                  speakers[idx].file =
-                                                      "there is a file";
-                                                });
-                                              } else {
-                                                setState(() {
-                                                  speakers[idx].file = "";
-                                                });
-                                              }
-                                            },
-                                            child: const Text("Upload File",
-                                                style: TextStyle(fontSize: 20)),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(speakers[idx].subject),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 400),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text(
+                                                  "From: ${speakers[idx].startTime}"),
+                                              Text(
+                                                  "To: ${speakers[idx].endTime}"),
+                                            ],
                                           ),
                                         ),
-                                      const SizedBox(height: 15),
-                                      if (speakers[idx].file.isNotEmpty)
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            SizedBox(
-                                              height: 40,
-                                              width: 200,
-                                              child: ElevatedButton(
-                                                onPressed: () async {
-                                                  try {
-                                                    await Provider.of<
-                                                                ConferenceProvider>(
-                                                            context,
-                                                            listen: false)
-                                                        .downloadFile(
-                                                            speakers[idx].id);
-                                                  } catch (e) {
-                                                    rethrow;
-                                                  }
-                                                },
-                                                child: const Text(
-                                                  "Download File",
-                                                  style: TextStyle(
-                                                    // fontWeight: FontWeight.bold,
-                                                    fontSize: 20,
+                                        const SizedBox(height: 15),
+                                        if (speakers[idx].file.isEmpty)
+                                          SizedBox(
+                                            height: 40,
+                                            width: 500,
+                                            child: ElevatedButton(
+                                              onPressed: () async {
+                                                await uploadFile(
+                                                    speakers[idx].id);
+                                                if (isUploaded == true) {
+                                                  setState(() {
+                                                    speakers[idx].file =
+                                                        "there is a file";
+                                                  });
+                                                } else {
+                                                  setState(() {
+                                                    speakers[idx].file = "";
+                                                  });
+                                                }
+                                              },
+                                              child: const Text("Upload File",
+                                                  style:
+                                                      TextStyle(fontSize: 20)),
+                                            ),
+                                          ),
+                                        const SizedBox(height: 15),
+                                        if (speakers[idx].file.isNotEmpty)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 10),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                SizedBox(
+                                                  height: 40,
+                                                  width: 200,
+                                                  child: ElevatedButton(
+                                                    onPressed: () async {
+                                                      try {
+                                                        await Provider.of<
+                                                                    ConferenceProvider>(
+                                                                context,
+                                                                listen: false)
+                                                            .downloadFile(
+                                                                speakers[idx]
+                                                                    .id);
+                                                      } catch (e) {
+                                                        rethrow;
+                                                      }
+                                                    },
+                                                    child: const Text(
+                                                      "Download File",
+                                                      style: TextStyle(
+                                                        fontSize: 20,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
+                                                SizedBox(
+                                                  height: 40,
+                                                  width: 200,
+                                                  child: ElevatedButton(
+                                                    onPressed: () async {
+                                                      try {
+                                                        bool deleteAction =
+                                                            await deleteAlert(
+                                                                context);
+                                                        if (deleteAction ==
+                                                            true) {
+                                                          deleteFile(
+                                                              speakers[idx]);
+                                                          setState(() {
+                                                            speakers[idx].file =
+                                                                "";
+                                                          });
+                                                        }
+                                                      } catch (e) {
+                                                        rethrow;
+                                                      }
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                            primary:
+                                                                Colors.red),
+                                                    child: const Text(
+                                                        "Remove File",
+                                                        style: TextStyle(
+                                                            fontSize: 20)),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            SizedBox(
-                                              height: 40,
-                                              width: 200,
-                                              child: ElevatedButton(
-                                                onPressed: () async {
-                                                  try {
-                                                    bool deleteAction =
-                                                        await deleteAlert(
-                                                            context);
-                                                    if (deleteAction == true) {
-                                                      deleteFile(speakers[idx]);
-                                                      setState(() {
-                                                        speakers[idx].file = "";
-                                                      });
-                                                    }
-                                                  } catch (e) {
-                                                    rethrow;
-                                                  }
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                    primary: Colors.red),
-                                                child: const Text("Remove File",
-                                                    style: TextStyle(
-                                                        fontSize: 20)),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                    ],
+                                          ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Positioned(
-                                right: 20,
-                                top: 20,
-                                child: IconButton(
-                                    highlightColor: Colors.transparent,
-                                    splashColor: Colors.transparent,
-                                    hoverColor: Colors.transparent,
-                                    onPressed: () async {
-                                      bool deleteAction =
-                                          await deleteAlert(context);
-                                      if (deleteAction == true) {
-                                        await deleteSpeaker(speakers[idx]);
-                                      }
-                                    },
-                                    icon: const Icon(
-                                      Icons.delete,
-                                      color: Colors.red,
-                                    )),
-                              ),
-                            ],
-                          );
-                        }),
-                  ),
+                                Positioned(
+                                  right: 20,
+                                  top: 20,
+                                  child: IconButton(
+                                      highlightColor: Colors.transparent,
+                                      splashColor: Colors.transparent,
+                                      hoverColor: Colors.transparent,
+                                      onPressed: () async {
+                                        bool deleteAction =
+                                            await deleteAlert(context);
+                                        if (deleteAction == true) {
+                                          await deleteSpeaker(speakers[idx]);
+                                        }
+                                      },
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      )),
+                                ),
+                              ],
+                            );
+                          }),
+                    ),
                 ],
               ),
             ),

@@ -24,14 +24,10 @@ class _HomePageState extends State<HomePage> {
 
       await Provider.of<ConferenceProvider>(context, listen: false)
           .getSuggestions();
-
-     
     } catch (e) {
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(
-            backgroundColor: MyColors.colors[200],
-            content: const Text("Error: Check the server!")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: MyColors.colors[200],
+          content: const Text("Error: Check the server!")));
       rethrow;
     }
   }
@@ -105,10 +101,15 @@ class _HomePageState extends State<HomePage> {
                               controller: _textEditingControllerSearch,
                               style: const TextStyle(fontSize: 16),
                               decoration: InputDecoration(
-                                  icon:  Icon(Icons.search,color: Colors.grey[700],),
+                                  icon: Icon(
+                                    Icons.search,
+                                    color: Colors.grey[700],
+                                  ),
                                   labelText: "Search by speaker's name",
-                                  labelStyle:
-                                      TextStyle(color: Colors.grey[700],fontSize: 16,fontWeight: FontWeight.bold),
+                                  labelStyle: TextStyle(
+                                      color: Colors.grey[700],
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
                                   border: InputBorder.none),
                             ),
                             onSuggestionSelected: (suggestion) {

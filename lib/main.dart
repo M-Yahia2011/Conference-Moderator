@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_strategy/url_strategy.dart';
 import '/helpers/app_theme.dart';
-import '/screens/homePage.dart';
-import '/screens/set_IP_screen.dart';
 import '/providers/conf_provider.dart';
 import './screens/screens.dart';
 
 void main() {
   setPathUrlStrategy();
-  runApp(const MyApp());
+  runApp( MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+   MyApp({Key? key}) : super(key: key);
+   
   Future<void> checkEndpoint(BuildContext context) async {
     await Provider.of<ConferenceProvider>(context, listen: false)
         .checkStoredMainpoint();
+    print("checked");
   }
 
   @override
@@ -29,7 +29,12 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.theme,
         home: Consumer<ConferenceProvider>(
           builder: (context, provider, child) {
-            checkEndpoint(context);
+            /// this part to prevent calling checkpoint
+            if (provider.isStoredEndpointChecked == false) {
+              checkEndpoint(context);
+              provider.isStoredEndpointChecked = true;
+            }
+            ///
             if (provider.isEndpointSetted() == true) {
               return const HomePage();
             } else {
