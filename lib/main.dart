@@ -7,16 +7,16 @@ import './screens/screens.dart';
 
 void main() {
   setPathUrlStrategy();
-  runApp( MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-   MyApp({Key? key}) : super(key: key);
-   
+  const MyApp({Key? key}) : super(key: key);
+
   Future<void> checkEndpoint(BuildContext context) async {
     await Provider.of<ConferenceProvider>(context, listen: false)
         .checkStoredMainpoint();
-    print("checked");
+    
   }
 
   @override
@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
               checkEndpoint(context);
               provider.isStoredEndpointChecked = true;
             }
+
             ///
             if (provider.isEndpointSetted() == true) {
               return const HomePage();

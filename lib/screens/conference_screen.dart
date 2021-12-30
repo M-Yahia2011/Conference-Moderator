@@ -196,7 +196,10 @@ class HallCard extends StatelessWidget {
         context: ctx,
         builder: (ctx) {
           return AlertDialog(
-            title: const Text('Attention'),
+            title: const Text(
+              'Attention',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             actions: [
               TextButton(
                   onPressed: () {
@@ -204,7 +207,7 @@ class HallCard extends StatelessWidget {
                   },
                   child: const Text(
                     'Yes',
-                    style: TextStyle(fontSize: 15),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   )),
               TextButton(
                   onPressed: () {
@@ -212,10 +215,13 @@ class HallCard extends StatelessWidget {
                   },
                   child: const Text(
                     'No',
-                    style: TextStyle(fontSize: 15),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ))
             ],
-            content: const Text("Are you sure you want to delete?"),
+            content: const Text(
+              "Are you sure you want to delete?",
+              style: TextStyle(fontSize: 16),
+            ),
           );
         });
   }

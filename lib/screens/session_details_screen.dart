@@ -131,7 +131,10 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
         context: ctx,
         builder: (ctx) {
           return AlertDialog(
-            title: const Text('Attention'),
+            title: const Text(
+              'Attention',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             actions: [
               TextButton(
                   onPressed: () {
@@ -139,7 +142,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                   },
                   child: const Text(
                     'Yes',
-                    style: TextStyle(fontSize: 15),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   )),
               TextButton(
                   onPressed: () {
@@ -147,10 +150,13 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                   },
                   child: const Text(
                     'No',
-                    style: TextStyle(fontSize: 15),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ))
             ],
-            content: const Text("Are you sure you want to delete?"),
+            content: const Text(
+              "Are you sure you want to delete?",
+              style: TextStyle(fontSize: 16),
+            ),
           );
         });
   }
@@ -193,6 +199,33 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                               fontSize: 16,
                               fontWeight: FontWeight.bold),
                           border: InputBorder.none),
+                      onSubmitted: (_) async {
+                        if (_textEditingControllerName.text.isEmpty ||
+                            _textEditingControllerSubject.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: MyColors.colors[200],
+                              content: const Text(
+                                  "You must enter the speaker's name and subject!")));
+                        } else if (startTime == null || endTime == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: MyColors.colors[200],
+                              content: const Text("You must pick the time!")));
+                        } else {
+                          Map<String, dynamic> speakerInfo = {
+                            "name": _textEditingControllerName.text.trim(),
+                            "subject":
+                                _textEditingControllerSubject.text.trim(),
+                            "start_time": startTime!.format(context),
+                            "end_time": endTime!.format(context),
+                            "file": "",
+                            "session_id": session.id
+                          };
+                          await addSpeaker(session.id, speakerInfo);
+
+                          _textEditingControllerName.clear();
+                          _textEditingControllerSubject.clear();
+                        }
+                      },
                     ),
                   ),
                   Container(
@@ -214,6 +247,33 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                               color: Colors.grey[700],
                               fontWeight: FontWeight.bold),
                           border: InputBorder.none),
+                      onSubmitted: (_) async {
+                        if (_textEditingControllerName.text.isEmpty ||
+                            _textEditingControllerSubject.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: MyColors.colors[200],
+                              content: const Text(
+                                  "You must enter the speaker's name and subject!")));
+                        } else if (startTime == null || endTime == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: MyColors.colors[200],
+                              content: const Text("You must pick the time!")));
+                        } else {
+                          Map<String, dynamic> speakerInfo = {
+                            "name": _textEditingControllerName.text.trim(),
+                            "subject":
+                                _textEditingControllerSubject.text.trim(),
+                            "start_time": startTime!.format(context),
+                            "end_time": endTime!.format(context),
+                            "file": "",
+                            "session_id": session.id
+                          };
+                          await addSpeaker(session.id, speakerInfo);
+
+                          _textEditingControllerName.clear();
+                          _textEditingControllerSubject.clear();
+                        }
+                      },
                     ),
                   ),
                   Row(
@@ -298,7 +358,8 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                             } else {
                               Map<String, dynamic> speakerInfo = {
                                 "name": _textEditingControllerName.text.trim(),
-                                "subject": _textEditingControllerSubject.text.trim(),
+                                "subject":
+                                    _textEditingControllerSubject.text.trim(),
                                 "start_time": startTime!.format(context),
                                 "end_time": endTime!.format(context),
                                 "file": "",

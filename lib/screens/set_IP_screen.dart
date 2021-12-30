@@ -43,6 +43,7 @@ class _SetIpScreenState extends State<SetIPScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const Text("Enter The IP and the Port number for the Server"),
             SizedBox(
               width: 500,
               child: Row(
@@ -65,6 +66,20 @@ class _SetIpScreenState extends State<SetIPScreen> {
                             labelStyle:
                                 TextStyle(fontSize: 14, color: Colors.black),
                             border: InputBorder.none),
+                        onSubmitted: (_) {
+                          if (_textEditingControllerIP.text.isEmpty ||
+                              _textEditingControllerPort.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                backgroundColor: MyColors.colors[200],
+                                content: const Text(
+                                    "You must enter the IP and the Port number!")));
+                          } else {
+                            Provider.of<ConferenceProvider>(context,
+                                    listen: false)
+                                .setIP(_textEditingControllerIP.text,
+                                    _textEditingControllerPort.text);
+                          }
+                        },
                       ),
                     ),
                   ),
@@ -86,6 +101,20 @@ class _SetIpScreenState extends State<SetIPScreen> {
                           labelStyle:
                               TextStyle(fontSize: 14, color: Colors.black),
                           border: InputBorder.none),
+                      onSubmitted: (_) {
+                        if (_textEditingControllerIP.text.isEmpty ||
+                            _textEditingControllerPort.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: MyColors.colors[200],
+                              content: const Text(
+                                  "You must enter the IP and the Port number!")));
+                        } else {
+                          Provider.of<ConferenceProvider>(context,
+                                  listen: false)
+                              .setIP(_textEditingControllerIP.text,
+                                  _textEditingControllerPort.text);
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -99,13 +128,13 @@ class _SetIpScreenState extends State<SetIPScreen> {
                   if (_textEditingControllerIP.text.isEmpty ||
                       _textEditingControllerPort.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      backgroundColor: MyColors.colors[200],
-                      content: const Text("You must enter the IP and the Port!")));
-                  }else{
-
-                  Provider.of<ConferenceProvider>(context, listen: false).setIP(
-                      _textEditingControllerIP.text,
-                      _textEditingControllerPort.text);
+                        backgroundColor: MyColors.colors[200],
+                        content:
+                            const Text("You must enter the IP and the Port!")));
+                  } else {
+                    Provider.of<ConferenceProvider>(context, listen: false)
+                        .setIP(_textEditingControllerIP.text,
+                            _textEditingControllerPort.text);
                   }
 
                   _textEditingControllerIP.clear();

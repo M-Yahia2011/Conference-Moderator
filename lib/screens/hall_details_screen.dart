@@ -77,7 +77,10 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
         context: ctx,
         builder: (ctx) {
           return AlertDialog(
-            title: const Text('Attention'),
+            title: const Text(
+              'Attention',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             actions: [
               TextButton(
                   onPressed: () {
@@ -85,7 +88,7 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                   },
                   child: const Text(
                     'Yes',
-                    style: TextStyle(fontSize: 15),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   )),
               TextButton(
                   onPressed: () {
@@ -93,10 +96,13 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                   },
                   child: const Text(
                     'No',
-                    style: TextStyle(fontSize: 15),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ))
             ],
-            content: const Text("Are you sure you want to delete?"),
+            content: const Text(
+              "Are you sure you want to delete?",
+              style: TextStyle(fontSize: 16),
+            ),
           );
         });
   }
@@ -138,6 +144,29 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                               fontSize: 16,
                               fontWeight: FontWeight.bold),
                           border: InputBorder.none),
+                      onSubmitted: (_) async {
+                        if (_pickedDate == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: MyColors.colors[200],
+                              content: const Text("You must pick a Date!")));
+                        } else if (_textEditingController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: MyColors.colors[200],
+                              content: const Text(
+                                  "You must enter the session Name!")));
+                        } else {
+                          Map<String, dynamic> sessionInfo = {
+                            "name": _textEditingController.text.trim(),
+                            "hall_id": hall.id,
+                            "date": intl.DateFormat.yMMMEd()
+                                .format(_pickedDate!)
+                                .toString()
+                          };
+
+                          await addSession(hall.id, sessionInfo);
+                          _textEditingController.clear();
+                        }
+                      },
                     ),
                   ),
                   SizedBox(
@@ -168,17 +197,14 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                     child: ElevatedButton(
                         onPressed: () async {
                           if (_pickedDate == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    backgroundColor: MyColors.colors[200],
-                                    content:
-                                        const Text("You must pick a Date!")));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                backgroundColor: MyColors.colors[200],
+                                content: const Text("You must pick a Date!")));
                           } else if (_textEditingController.text.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    backgroundColor: MyColors.colors[200],
-                                    content: const Text(
-                                        "You must enter the session Name!")));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                backgroundColor: MyColors.colors[200],
+                                content: const Text(
+                                    "You must enter the session Name!")));
                           } else {
                             Map<String, dynamic> sessionInfo = {
                               "name": _textEditingController.text.trim(),
@@ -187,7 +213,7 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                                   .format(_pickedDate!)
                                   .toString()
                             };
-          
+
                             await addSession(hall.id, sessionInfo);
                             _textEditingController.clear();
                           }
@@ -197,100 +223,100 @@ class _HallDetailsScreenState extends State<HallDetailsScreen> {
                           style: TextStyle(fontSize: 25),
                         )),
                   ),
-                  if(hall.sessions.isEmpty)
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(50.0),
-                      child: Text("No sessions were added",style: TextStyle(fontSize: 25),),
-                    ),
-                  )
-                  ,
-                  if(hall.sessions.isNotEmpty)
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(50, 0, 50, 30),
-                    child: GridView.builder(
-                      controller: _scrollController,
-                      itemCount: hall.sessions.length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 7,
-                        childAspectRatio: 1.5 / 2,
+                  if (hall.sessions.isEmpty)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(50.0),
+                        child: Text(
+                          "No sessions were added",
+                          style: TextStyle(fontSize: 25),
+                        ),
                       ),
-                      itemBuilder: (context, idx) {
-                        return Stack(
-                          children: [
-                            SizedBox(
-                              width: double.infinity,
-                              child: Card(
-                                margin: const EdgeInsets.all(15),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(20),
-                                  onTap: () {
-                                    Navigator.of(context).pushNamed(
-                                        SessionDetailsScreen.routeName,
-                                        arguments: hall.sessions[idx]);
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          hall.sessions[idx].name,
-                                          style: const TextStyle(
-                                              fontSize: 22,
-                                              overflow:
-                                                  TextOverflow.ellipsis,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        FittedBox(
-                                          child: Text(
-                                            hall.sessions[idx].date,
+                    ),
+                  if (hall.sessions.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(50, 0, 50, 30),
+                      child: GridView.builder(
+                        controller: _scrollController,
+                        itemCount: hall.sessions.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 7,
+                          childAspectRatio: 1.5 / 2,
+                        ),
+                        itemBuilder: (context, idx) {
+                          return Stack(
+                            children: [
+                              SizedBox(
+                                width: double.infinity,
+                                child: Card(
+                                  margin: const EdgeInsets.all(15),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(20),
+                                    onTap: () {
+                                      Navigator.of(context).pushNamed(
+                                          SessionDetailsScreen.routeName,
+                                          arguments: hall.sessions[idx]);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            hall.sessions[idx].name,
                                             style: const TextStyle(
-                                                fontSize: 20,
-                                                overflow:
-                                                    TextOverflow.ellipsis),
+                                                fontSize: 22,
+                                                overflow: TextOverflow.ellipsis,
+                                                fontWeight: FontWeight.bold),
                                           ),
-                                        ),
-                                      ],
+                                          FittedBox(
+                                            child: Text(
+                                              hall.sessions[idx].date,
+                                              style: const TextStyle(
+                                                  fontSize: 20,
+                                                  overflow:
+                                                      TextOverflow.ellipsis),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Positioned(
-                              right: 20,
-                              top: 20,
-                              child: IconButton(
-                                  highlightColor: Colors.transparent,
-                                  splashColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  onPressed: () async {
-                                    bool deleteAction =
-                                        await deleteAlert(context);
-                                    if (deleteAction == true) {
-                                      await deleteSession(
-                                          hall.sessions[idx]);
-                                    }
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  )),
-                            ),
-                          ],
-                        );
-                      },
+                              Positioned(
+                                right: 20,
+                                top: 20,
+                                child: IconButton(
+                                    highlightColor: Colors.transparent,
+                                    splashColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                    onPressed: () async {
+                                      bool deleteAction =
+                                          await deleteAlert(context);
+                                      if (deleteAction == true) {
+                                        await deleteSession(hall.sessions[idx]);
+                                      }
+                                    },
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    )),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
